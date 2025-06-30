@@ -1,0 +1,95 @@
+<template>
+    <div v-if="data" class="max-w-3xl mx-auto mt-8">
+        <Card>
+            <CardHeader class="h-52 relative flex flex-col justify-between">
+                <img :src="`/api/v1/cms/${data.bild_reference}`" alt="Rezept Bild"
+                    class="absolute inset-0 w-full h-80 object-cover -top-6 object-center rounded-t-lg mask-t-from-100% mask-b-to-80%" />
+
+                <NuxtLink
+                    :to="{ name: 'authenticated-households-household', params: { household: useRoute().params.household } }"
+                    class="z-10">
+                    <Button variant="outline">
+                        <ChevronsLeft /> Zurück
+                    </Button>
+                </NuxtLink>
+                <div class="z-10 w-full rounded-lg">
+                    <CardTitle class="text-2xl font-bold mb-2">{{ data.name }}</CardTitle>
+                    <div class="flex flex-wrap gap-2">
+                        <Badge>
+                            <NuxtTime relative :datetime="data.created" style="long" numeric="auto" />
+                        </Badge>
+                        <Badge>{{ data.zutaten?.length || 0 }} Zutat(en)</Badge>
+                        <Badge>
+                            Ungefähr {{ geldFormat.format(calculateCost(data)) }} pro Portion
+                        </Badge>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent class="space-y-8">
+                <div>
+                    <Label class="text-lg font-semibold">Beschreibung</Label>
+                    <span class="mt-2 text-base text-muted-foreground">
+                        {{ data.beschreibung }}
+                    </span>
+                </div>
+                <div>
+                    <NumberField id="portion" :default-value="members?.length || 0" :min="1" class="mb-4"
+                        v-model="portions">
+                        <Label for="portion" class="text-lg font-semibold">Portionen</Label>
+                        <NumberFieldContent>
+                            <NumberFieldDecrement />
+                            <NumberFieldInput />
+                            <NumberFieldIncrement />
+                        </NumberFieldContent>
+                    </NumberField>
+                </div>
+                <div>
+                    <Label class="text-lg font-semibold">Zutaten</Label>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li v-for="zutat in data.zutaten" :key="zutat._id">
+                            {{ zutat.name }} – {{ portions * zutat.portion }} {{ zutat.verpackungsmenge_einheit }}
+                        </li>
+                    </ul>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+    <div v-else class="flex justify-center items-center h-96">
+        <Loader2Icon class="animate-spin mr-2" />
+        <span>Laden...</span>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { Loader2Icon, ChevronsLeft } from "lucide-vue-next";
+import { useRouter } from 'vue-router';
+import { useMembers } from "~/composable/members";
+
+const portions = ref(1);
+const recipeId = useRoute().params.recipeId;
+const router = useRouter();
+const members = useMembers();
+
+const { data, status } = await useFetch("/api/v1/household/recipes/get", {
+    query: {
+        recipeId,
+    }
+});
+
+const geldFormat = new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+});
+
+const calculateCost = (rezept: any): number => {
+    if (!rezept?.zutaten) return 0;
+    return rezept.zutaten.reduce((total: number, zutat: any) => {
+        return total + ((zutat.portion / zutat.verpackungsmenge) * zutat.preis);
+    }, 0);
+};
+
+function goBack() {
+    router.back();
+}
+</script>
