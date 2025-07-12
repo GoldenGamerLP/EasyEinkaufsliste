@@ -118,7 +118,7 @@ const onRegister = async (values: Record<string, any>) => {
 };
 
 const forward = async () => {
-  const forwardedUrl = (useRoute().query.forward as string) || "/household";
+  const forwardedUrl = (useRoute().query.forward as string) || "/households";
   await useRouter().push("/authenticated" + forwardedUrl);
 };
 </script>

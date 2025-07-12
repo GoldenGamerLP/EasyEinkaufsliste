@@ -20,22 +20,33 @@
                     <Combobox by="label" v-model="person">
                         <ComboboxAnchor class="w-full">
                             <div class="relative w-full items-center">
-                                <ComboboxInput class="pl-9" :display-value="(val) => val?.label ?? ''"
+                                <ComboboxInput class="pl-9" :display-value="(val) => val.mail ?? ''"
                                     placeholder="Email des Benutzers..." v-model="search" />
                                 <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
                                     <UserPlus class="size-4 text-muted-foreground" />
                                 </span>
+                                <Button class="absolute inset-y-0 right-0" variant="link"
+                                    :disabled="!person || addUserLoading" @click="addUserToHousehold">
+                                    <template v-if="addUserLoading">
+                                        <Loader2Icon class="animate-spin" />
+                                    </template>
+                                    <template v-else>
+                                        <Check />
+                                        Hinzufügen
+                                    </template>
+                                </Button>
                             </div>
                         </ComboboxAnchor>
 
                         <ComboboxList class="w-full">
                             <ComboboxEmpty>
-                                Keine Benutzer gefunden.
+                                Keine Benutzer gefunden oder er ist bereits hinzugefügt.
                             </ComboboxEmpty>
 
                             <ComboboxGroup>
-                                
-                                <ComboboxItem v-for="user of data" :key="user.mail" :value="user.mail" class="w-full">
+
+                                <ComboboxItem v-for="user of computedResult" :key="user.mail" :value="user"
+                                    class="w-full">
                                     {{ user.mail }}
 
                                     <ComboboxItemIndicator>
@@ -46,18 +57,8 @@
                         </ComboboxList>
                     </Combobox>
                 </li>
-                <li v-for="member in members" :key="member._id"
-                    class="flex items-center gap-2 px-1.5 py-0.5 odd:bg-card rounded-lg">
-                    <User class="h-8 w-8 flex-shrink-0" />
-                    <div>
-                        <h3 class="font-semibold">{{ member.name }} <span class="text-sm mt-0.5 text-muted-foreground"
-                                v-if="isSelf(member)">(Du)</span></h3>
-                        <p class="text-sm text-muted-foreground">{{ member.mail }}</p>
-                    </div>
-                    <Button variant="destructive" class="ml-auto" :disabled="isSelf(member)">
-                        <Trash2 />
-                        Entfernen
-                    </Button>
+                <li v-for="member in members" :key="member._id">
+                    <SystemMemberEntry :member="member" :can-edit="isCreator && !isSelf(member)" />
                 </li>
             </ol>
             <DrawerFooter>
@@ -72,13 +73,14 @@
 </template>
 
 <script lang="ts" setup>
-import { throttledRef } from '@vueuse/core';
-import { Trash2, User, UserPlus, Check } from 'lucide-vue-next';
+import { User, UserPlus, Check, Loader2Icon } from 'lucide-vue-next';
 import { useUser } from '~/composable/auth';
 import { useMembers } from '~/composable/members';
 import { cn } from '~/lib/utils';
 import type { FrontEndUser } from '~/types/User';
-
+import { toast } from 'vue-sonner';
+import { useHousehold } from '~/composable/household';
+import { UserRoles, type UserRole } from '~/types/HouseHold';
 const user = useUser();
 const members = useMembers();
 
@@ -88,8 +90,10 @@ const isSelf = (member: FrontEndUser) => {
 
 const person = ref<FrontEndUser | null>(null);
 const search = ref('');
+const addUserLoading = ref(false);
+const household = useHousehold();
 
-const { data, status } = useLazyFetch('/api/v1/household/members/search', {
+const { data, status, refresh } = useLazyFetch('/api/v1/household/members/search', {
     method: "get",
     query: {
         userMail: search,
@@ -97,10 +101,54 @@ const { data, status } = useLazyFetch('/api/v1/household/members/search', {
     watch: [search],
 });
 
+const isCreator = computed(() => {
+    return household.value?.memberRoles[user.value?._id || ''] === UserRoles[2];
+});
+
 const computedResult = computed(() => {
-    //Concat the members and the search results
-    return [...members.value, ...(data.value || [])].filter((item, index, self) =>
-        index === self.findIndex((t) => t.mail === item.mail)
-    );
-})
+    const result = [];
+    const crrData = data.value;
+
+    if (!crrData || !members) return [];
+
+    let add = true;
+    for (const user of crrData) {
+        for (const crrMember of members.value) {
+            if (crrMember._id === user._id) {
+                add = false;
+                break;
+            }
+        }
+
+        if (add) result.push(user);
+    }
+
+    return result;
+});
+
+const addUserToHousehold = async () => {
+    if (addUserLoading.value) return;
+
+    addUserLoading.value = true;
+    try {
+        const req = await $fetch("/api/v1/household/members/addMember", {
+            method: "POST",
+            body: {
+                householdId: useRoute().params.household,
+                userId: person.value?._id,
+            }
+        });
+
+        toast.success("Der Bentuzer wurde erfolgreich hinzugefügt.");
+
+        members.value?.push(req);
+        person.value = null;
+
+        await refresh();
+    } catch (error) {
+        toast.error("Ein fehler ist aufgetreten während hinzufügen des Benutzers.")
+    }
+
+    addUserLoading.value = false;
+}
 </script>

@@ -21,5 +21,5 @@ export default defineEventHandler(async (event) => {
     }
 
 
-    insertNewRecipe(data, data.householdId, user._id);
+    return await insertNewRecipe(data, data.householdId, user._id);
 });

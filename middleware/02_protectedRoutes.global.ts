@@ -1,6 +1,6 @@
 import { useUser } from "~/composable/auth";
 
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware((to) => {
   const user = useUser();
 
   if (user.value !== null) return;

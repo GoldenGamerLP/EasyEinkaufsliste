@@ -26,5 +26,5 @@ export default defineEventHandler(async (event) => {
 });
 
 const validation = z.object({
-    userMail: z.string().min(1, "User email is required").max(100, "User email must be less than 100 characters"),
+    userMail: z.string(),
 });

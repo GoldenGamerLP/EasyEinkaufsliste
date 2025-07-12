@@ -4,7 +4,7 @@
             <CardTitle>{{ question.title }}</CardTitle>
             <CardDescription>{{ question.description }} <span class="text-sm mt-0.5" v-if="question.systemId">(System)</span></CardDescription>
         </CardHeader>
-        <CardContent class="flex flex-col gap-2">
+        <CardContent class="flex flex-col gap-2" v-if="answerStatus === 'success'">
 
             <label v-for="(answer, index) in question.answers" :for="answer.id"
                 @click.stop.prevent="selectAnswer(answer.id)">
@@ -24,6 +24,10 @@
             </label>
 
         </CardContent>
+        <div v-else-if="answerStatus === 'pending'" class="flex items-center justify-center h-64">
+            <Loader2Icon class="size-8 animate-spin" />
+            <span class="text-muted-foreground ml-2">Lade Antworten...</span>
+        </div>
         <CardFooter class="flex-wrap justify-center items-center gap-y-2 sm:gap-0">
             <p class="text-muted-foreground text-sm mt-0.5 ml-0.5">Es haben bereits {{
                 sumOfSelections(question._id)
@@ -39,7 +43,7 @@
                 <DrawerContent class="mx-auto w-full max-w-4xl">
                     <DrawerHeader>
                         <DrawerTitle>Ergenisse - {{ question.title }}</DrawerTitle>
-                        <DrawerDescription>Ergenisse dieser Umfrage - Ende in:
+                        <DrawerDescription>Ergenisse dieser Umfrage - Endet 
                             <NuxtTime relative :datetime="question.ttl" />
                         </DrawerDescription>
                     </DrawerHeader>
@@ -90,6 +94,7 @@
 </template>
 
 <script lang="ts" setup>
+import { Loader2Icon } from 'lucide-vue-next';
 import { useUser } from '~/composable/auth';
 import { useMembers } from '~/composable/members';
 import { type Question } from '~/types/QandA';
@@ -102,7 +107,7 @@ const props = defineProps<{
     question: Question;
 }>();
 
-const { data: answerData, status: answerStatus } = await useFetch("/api/v1/household/qanda/answers", {
+const { data: answerData, status: answerStatus } = useLazyFetch("/api/v1/household/qanda/answers", {
     query: {
         questionId: props.question._id,
     },

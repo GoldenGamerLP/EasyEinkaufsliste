@@ -5,13 +5,31 @@
                 <img :src="`/api/v1/cms/${data.bild_reference}`" alt="Rezept Bild"
                     class="absolute inset-0 w-full h-80 object-cover -top-6 object-center rounded-t-lg mask-t-from-100% mask-b-to-80%" />
 
-                <NuxtLink
-                    :to="{ name: 'authenticated-households-household', params: { household: useRoute().params.household } }"
-                    class="z-10">
-                    <Button variant="outline">
-                        <ChevronsLeft /> Zurück
-                    </Button>
-                </NuxtLink>
+                <div class="flex justify-between w-full z-10">
+                    <NuxtLink
+                        :to="{ name: 'authenticated-households-household', params: { household: useRoute().params.household } }">
+                        <Button variant="outline">
+                            <ChevronsLeft /> Zurück
+                        </Button>
+                    </NuxtLink>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <Button variant="outline">
+                                <MoreVertical />
+                                <span class="sr-only">Mehr</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Profile</DropdownMenuItem>
+                            <DropdownMenuItem>Billing</DropdownMenuItem>
+                            <DropdownMenuItem>Team</DropdownMenuItem>
+                            <DropdownMenuItem>Subscription</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                </div>
                 <div class="z-10 w-full rounded-lg">
                     <CardTitle class="text-2xl font-bold mb-2">{{ data.name }}</CardTitle>
                     <div class="flex flex-wrap gap-2">
@@ -61,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { Loader2Icon, ChevronsLeft } from "lucide-vue-next";
+import { Loader2Icon, ChevronsLeft, MoreVertical } from "lucide-vue-next";
 import { useRouter } from 'vue-router';
 import { useMembers } from "~/composable/members";
 

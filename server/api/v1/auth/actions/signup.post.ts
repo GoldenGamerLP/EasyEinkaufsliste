@@ -3,6 +3,7 @@ import {
   createSessionCookie,
   registerLogin,
   usernameToUserIdentity,
+  updateUserImage,
 } from "~/server/utils/authUtils";
 import { registerSchema, UserRole } from "~/types/User";
 
@@ -16,7 +17,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { email, password, vorname, nachname } = data;
+  const { email, password, vorname, nachname, profilePicture } = data;
 
   // Check if passwords match
   if (data.password !== data.passwordRepeat) {
@@ -50,6 +51,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  await updateUserImage(result.user._id, profilePicture);
+
+
   // Create session and set cookie
   const session = await registerLogin(result.user, getRequestIP(event));
   const cookie = await createSessionCookie(session._id);
@@ -61,7 +65,6 @@ export default defineEventHandler(async (event) => {
       email: result.user.mail,
       name: result.user.name,
       lastname: result.user.lastname,
-      roles: result.user.roles
     }
   };
 });

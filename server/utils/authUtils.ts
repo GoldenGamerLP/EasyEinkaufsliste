@@ -7,11 +7,20 @@ export const expireAfterSeconds = 60 * 60 * 24 * 7; // 1 week
 const users = database.collection("users") as Collection<User>;
 const sessions = database.collection("sessions") as Collection<Session>;
 
-database.listCollections().toArray().then((collections: CollectionInfo[]) => {
-  if(collections.findIndex(collection => collection.name === "sessions") !== -1) return;
+database
+  .listCollections()
+  .toArray()
+  .then((collections: CollectionInfo[]) => {
+    if (
+      collections.findIndex((collection) => collection.name === "sessions") !==
+      -1
+    )
+      return;
 
-  database.createCollection("sessions", { timeseries: { timeField: "expires_at", metaField: "user_id" } });
-});
+    database.createCollection("sessions", {
+      timeseries: { timeField: "expires_at", metaField: "user_id" },
+    });
+  });
 
 export function userNameToId(userMail: string) {
   return users.findOne({
@@ -48,12 +57,37 @@ export async function createUser(
     lastname: lastname,
     last_login: new Date().toUTCString(),
     last_IP: "",
-    roles: [],
     created_at: new Date().toUTCString(),
   };
 
   const response = await users.insertOne(user);
   return { insertedId: response.insertedId, user };
+}
+
+export async function updateUserImage(userId: string, base64Image: string) {
+  const user = await users.findOne({ _id: userId });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (base64Image.startsWith("data:")) {
+    base64Image = base64Image.split(",")[1]; // Get only the base64 part
+  }
+  const buffer = Buffer.from(base64Image, "base64");
+  const fileName = `profilePicture_${userId}.jpg`;
+
+  if(user.bild_reference) {
+    await deleteFile(new ObjectId(user.bild_reference));
+  }
+
+  // Assuming uploadFile is a function that uploads the file and returns a URL or reference
+
+  const fileReference = await uploadFile(buffer, fileName, "image/png");
+
+  return users.updateOne(
+    { _id: userId },
+    { $set: { bild_reference: fileReference.id.toString() } }
+  );
 }
 
 export async function invalidateSession(sessionId: string) {
@@ -72,8 +106,20 @@ export const findSession = async (sessionId: string) => {
   return sessions.findOne({ _id: sessionId });
 };
 
-export async function getUserById(userId: string): Promise<User | null> {
-  return users.findOne({ _id: userId });
+export async function getUserById(
+  userId: string
+): Promise<FrontEndUser | null> {
+  return users.findOne(
+    { _id: userId },
+    {
+      projection: {
+        _id: 1,
+        mail: 1,
+        name: 1,
+        lastname: 1,
+      },
+    }
+  );
 }
 
 export async function createSession(
@@ -123,7 +169,9 @@ export function usernameToUserIdentity(mail: string) {
   return users.findOne({ mail: mail.toLowerCase() });
 }
 
-export const searchForUser = async (userMail: string): Promise<FrontEndUser[] | null> => {
+export const searchForUser = async (
+  userMail: string
+): Promise<FrontEndUser[] | null> => {
   const user = await users.findOne(
     { mail: userMail },
     { projection: { _id: 1, mail: 1, name: 1, lastname: 1 } }
@@ -137,9 +185,9 @@ export const searchForUser = async (userMail: string): Promise<FrontEndUser[] | 
       mail: user.mail,
       name: user.name,
       lastname: user.lastname,
-    }
-  ]
-}
+    },
+  ];
+};
 
 const cyrb53 = (str: string, seed = 0) => {
   let h1 = 0xdeadbeef ^ seed,

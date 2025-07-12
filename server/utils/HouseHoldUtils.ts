@@ -1,14 +1,13 @@
 import database from "./DBUtils";
 import fs from "fs";
-import { z } from "zod";
-import { infer } from "zod";
 import {
   FrontEndRezept,
   HouseHold,
   Lebensmittel,
   Rezept,
-  RezeptErstellSchema,
   RezeptErstellType,
+  UserRole,
+  UserRoles,
 } from "~/types/HouseHold";
 import { uploadFile } from "./FileUtils";
 import { ObjectId } from "mongodb";
@@ -19,53 +18,57 @@ const rezeptCollection = database.collection<Rezept>("rezepte");
 const lebensmittelCollection =
   database.collection<Lebensmittel>("lebensmittel");
 
-  export const getRecipe = async (recipeId: string): Promise<FrontEndRezept | null> => {
-  const recipe = await rezeptCollection.aggregate([
-    { $match: { _id: new ObjectId(recipeId) } },
-    { $unwind: { path: "$zutaten" } },
-    {
-      $addFields: {
-        zutatenId: {
-          $toObjectId: "$zutaten.lebensmittel_id",
-        },
-      },
-    },
-    {
-      $lookup: {
-        from: "lebensmittel",
-        localField: "zutatenId",
-        foreignField: "_id",
-        as: "zutat",
-      },
-    },
-    {
-      $group: {
-        _id: "$_id",
-        name: { $first: "$name" },
-        beschreibung: { $first: "$beschreibung" },
-        bild_reference: { $first: "$bild_reference" },
-        zutaten: {
-          $push: {
-            $mergeObjects: [
-              { $first: "$zutat" },
-              { portion: "$zutaten.portion" },
-            ],
+export const getRecipe = async (
+  recipeId: string
+): Promise<FrontEndRezept | null> => {
+  const recipe = await rezeptCollection
+    .aggregate([
+      { $match: { _id: new ObjectId(recipeId) } },
+      { $unwind: { path: "$zutaten" } },
+      {
+        $addFields: {
+          zutatenId: {
+            $toObjectId: "$zutaten.lebensmittel_id",
           },
         },
-        created: { $first: "$created" },
-        last_updated: { $first: "$last_updated" },
-        createdby: { $first: "$createdby" },
-        householdId: { $first: "$householdId" },
       },
-    },
-  ]).toArray();
+      {
+        $lookup: {
+          from: "lebensmittel",
+          localField: "zutatenId",
+          foreignField: "_id",
+          as: "zutat",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          beschreibung: { $first: "$beschreibung" },
+          bild_reference: { $first: "$bild_reference" },
+          zutaten: {
+            $push: {
+              $mergeObjects: [
+                { $first: "$zutat" },
+                { portion: "$zutaten.portion" },
+              ],
+            },
+          },
+          created: { $first: "$created" },
+          last_updated: { $first: "$last_updated" },
+          createdby: { $first: "$createdby" },
+          householdId: { $first: "$householdId" },
+        },
+      },
+    ])
+    .toArray();
 
   if (recipe.length === 0) {
     return null; // No recipe found
   }
 
   return recipe[0] as FrontEndRezept; // Return the first recipe found
-}
+};
 
 //TODO: Expose datbases? Or a function callback?
 export interface HouseholdAndrecipes {
@@ -78,12 +81,16 @@ export const getHouseholdsAndRecipes = async () => {
   const householdAndRecipes: HouseholdAndrecipes[] = [];
 
   for (const household of households) {
-    const recipes = await getRecipesForHousehold(household._id, undefined, "alphabetical");
+    const recipes = await getRecipesForHousehold(
+      household._id,
+      undefined,
+      "alphabetical"
+    );
     householdAndRecipes.push({ household, recipes });
   }
 
   return householdAndRecipes as HouseholdAndrecipes[];
-}
+};
 
 export const getRecipesForHousehold = async (
   householdId: string,
@@ -155,6 +162,76 @@ export const getRecipesForHousehold = async (
   return (await recipes.toArray()) as FrontEndRezept[];
 };
 
+export const addMemberToHousehold = async (
+  householdId: string,
+  userId: string
+) => {
+  const req = householdCollection.updateOne(
+    { _id: householdId },
+    {
+      $push: {
+        members: userId,
+      },
+      $set: {
+        [`memberRoles.${userId}`]: UserRoles[0], // Set default role for new member
+      },
+    }
+  );
+
+  const user = getUserById(userId);
+
+  return Promise.all([
+    req,
+    user.then((u) => {
+      if (!u) {
+        throw new Error("User not found");
+      }
+      return u;
+    }),
+  ]).then(([result, user]) => {
+    if (result.modifiedCount === 0) {
+      throw new Error("Failed to add member to household");
+    }
+    return user; // Return the user object
+  });
+};
+
+export const removeMemberFromHousehold = async (
+  householdId: string,
+  userId: string
+) => {
+  const req = householdCollection.updateOne(
+    { _id: householdId },
+    {
+      $pull: {
+        members: userId,
+      },
+      $unset: {
+        [`memberRoles.${userId}`]: "", // Remove the user's role
+      },
+    }
+  );
+
+  return (await req).modifiedCount != 0;
+};
+
+export const updateMemberRole = async (
+  userId: string,
+  householdId: string,
+  role: UserRole
+) => {
+  // Ensure householdId is a string (or ObjectId if needed)
+  const req = await householdCollection.updateOne(
+    { _id: householdId, [`members`]: userId },
+    {
+      $set: {
+        [`memberRoles.${userId}`]: role,
+      },
+    }
+  );
+  return req.modifiedCount > 0;
+};
+
 export const hasAccessToHousehold = async (
   householdId: string,
   userId: string
@@ -198,6 +275,7 @@ export const createNewHousehold = async (
     _id: new ObjectId().toString(),
     name,
     members: members.concat(userId), // Add the creator as a member
+    memberRoles: { [userId]: UserRoles[2] }, // Store as plain object for MongoDB compatibility
     createdBy: userId,
     createdAt: new Date(),
   };
@@ -309,38 +387,40 @@ export const insertNewRecipe = async (
   }
 };
 
-export const getHouseholdMembers = async (householdId: string): Promise<FrontEndUser[]> => {
+export const getHouseholdMembers = async (
+  householdId: string
+): Promise<FrontEndUser[]> => {
   const members = householdCollection.aggregate([
     {
       $lookup: {
-        from: 'users',
-        let: { users: '$members' },
+        from: "users",
+        let: { users: "$members" },
         pipeline: [
           {
             $match: {
-              $expr: { $in: ['$_id', '$$users'] }
-            }
+              $expr: { $in: ["$_id", "$$users"] },
+            },
           },
           {
             $project: {
               mail: 1,
               lastname: 1,
-              name: 1
-            }
-          }
+              name: 1,
+            },
+          },
         ],
-        as: 'members'
-      }
+        as: "members",
+      },
     },
-    { $project: { members: 1 } }
+    { $project: { members: 1 } },
   ]);
 
-  if(await members.hasNext()) {
+  if (await members.hasNext()) {
     const crrMembers = await members.next();
     return crrMembers?.members || [];
   }
 
   return [];
-}
+};
 
 checkOrInstert();

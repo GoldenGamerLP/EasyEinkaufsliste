@@ -1,11 +1,11 @@
 <template>
     <div>
         <header class="w-full border-b mb-2 px-1">
-            <h1 class="text-3xl">Households</h1>
-            <p class="text-muted-foreground">Manage your households here.</p>
+            <h1 class="text-3xl">EasyHouseholds</h1>
+            <p class="text-muted-foreground">Verwalte deine Haushalte hier.</p>
         </header>
         <ol class="px-1 flex flex-row gap-2">
-            <li class="rounded-lg border max-w-sm relative group overflow-hidden" v-for="household in data">
+            <li class="rounded-lg border max-w-sm relative group overflow-hidden w-full" v-for="household in data">
                 <NuxtLink :to="`/authenticated/households/${household._id}`" class="block">
                     <div class="mask-b-from-50% mask-b-to-70%">
                         <img src="https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0" alt="Household Image"
@@ -16,14 +16,14 @@
                             {{ household.name }}
                             <Badge>{{ household.members.length }} Teilnehmer</Badge>
                         </h2>
-                        <p class="text-muted-foreground">Erstellt am {{ household.createdAt }}</p>
+                        <p class="text-muted-foreground">Erstellt am <NuxtTime :datetime="household.createdAt" /></p>
                     </div>
                 </NuxtLink>
             </li>
             <li>
                 <Drawer>
                     <DrawerTrigger as-child>
-                        <Button variant="default">
+                        <Button variant="outline" class="h-full aspect-square">
                             <PlusIcon />
                             Neuer Haushalt
                         </Button>
@@ -34,11 +34,8 @@
                             <DrawerDescription>Erstelle einen Haushalt und füge Personen hinzu!</DrawerDescription>
                         </DrawerHeader>
                         <div class="p-4 pb-0 max-h-1/2 overflow-y-auto scrollbar">
-                            <AutoForm :schema="validation" class="space-y-8 px-2" @submit="onSubmit"
+                            <AutoForm :schema="validation.omit({members: true})" class="space-y-8 px-2" @submit="onSubmit"
                                 :loading="isLoading">
-                                <template #members="slotProps">
-                                    test
-                                </template>
                                 <Button type="submit" class="w-full">
                                     <SendIcon /> Absenden!
                                 </Button>
@@ -46,8 +43,8 @@
                         </div>
                         <DrawerFooter>
                             <DrawerClose>
-                                <Button variant="outline">
-                                    Cancel
+                                <Button variant="outline" class="w-full">
+                                    Zurück
                                 </Button>
                             </DrawerClose>
                         </DrawerFooter>
@@ -69,7 +66,7 @@ definePageMeta({
     middleware: ["only-logged-in"]
 })
 
-const { data, status, refresh } = useLazyFetch("/api/v1/household/households", {
+const { data, status, refresh } = useFetch("/api/v1/household/households", {
     method: "get",
 });
 
@@ -79,19 +76,19 @@ const validation = z.object({
     members: z.array(z.string()).default([]),
 });
 
-const onSubmit = async (formData: z.infer<typeof validation>) => {
+const onSubmit = async (data: Record<string,any>) => {
     isLoading.value = true;
     try {
         await $fetch("/api/v1/household/create", {
             method: "post",
-            body: formData,
+            body: data,
         });
 
         await refresh();
 
 
         toast("Haushalt erfolgreich erstellt!", {
-            description: `Der Haushalt "${formData.name}" wurde erfolgreich erstellt.`,
+            description: `Der Haushalt "${data.name}" wurde erfolgreich erstellt.`,
         });
     } catch (error) {
         toast("Fehler beim Erstellen des Haushalts", {

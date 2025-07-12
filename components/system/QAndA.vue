@@ -34,14 +34,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useUser } from '~/composable/auth';
-import { useMembers } from '~/composable/members';
-import { questionSChema, validation } from '~/types/QandA';
+import { validation } from '~/types/QandA';
 import { toast } from 'vue-sonner';
 
-const user = useUser();
 const householdId = useRoute().params.household as string;
-const members = useMembers();
 
 const { data: householdQuestions, status: questionStatus } = await useFetch("/api/v1/household/qanda/questions", {
     query: {

@@ -1,5 +1,8 @@
 import * as z from "zod";
 
+export const UserRoles = ['READ', 'READ_WRITE', 'CREATOR'] as const;
+export type UserRole = typeof UserRoles[number];
+
 type FileAttachment = {
   fileId: String; // GridFS file ID
   filename: string;
@@ -50,6 +53,7 @@ interface Rezept {
   last_updated: Date;
   createdby: string;
   householdId: string;
+  isPublic: boolean;
 }
 
 interface FrontEndRezept {
@@ -72,6 +76,9 @@ interface HouseHold {
   _id: string; // MongoDB ObjectId
   name: string;
   members: string[]; // Array of user IDs
+  memberRoles: {
+    [userId: string]: UserRole; // Map of user IDs to their roles
+  }
   createdBy: string; // User ID of the creator
   createdAt: Date; // Date when the household was created
 }

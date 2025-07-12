@@ -16,7 +16,37 @@ export default defineEventHandler(async (event) => {
 
   const { recipeId } = data;
 
-  return await getRecipe(recipeId);
+  const recipe = await getRecipe(recipeId);
+
+  if (!recipe) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Rezept nicht gefunden.",
+    });
+  }
+
+  const user = event.context.user;
+
+  if(!recipe.isPublic) {
+    if(!user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Nicht autorisiert.",
+      });
+    }
+
+    const isInHousehold = await getHousehold(recipe.householdId, user._id);
+
+    if(!isInHousehold) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: "Zugriff verweigert. Du bist nicht im Haushalt dieses Rezepts.",
+      });
+    }
+  }
+
+  handleCacheHeaders(event, { maxAge: 1 * 60 * 60, cacheControls: ['public'] });
+  return recipe;
 });
 
 const validation = z.object({

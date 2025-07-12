@@ -1,11 +1,5 @@
 import * as z from "zod";
 
-export enum UserRole {
-  ADMIN = "admin",
-  USER = "user",
-  LEHRER = "lehrer",
-}
-
 export type User = {
   _id: string;
   mail: string;
@@ -14,8 +8,8 @@ export type User = {
   lastname: string;
   last_login: string;
   last_IP: string;
-  roles: UserRole[];
   created_at: string;
+  bild_reference?: string;
 };
 
 export type FrontEndUser = {
@@ -23,6 +17,7 @@ export type FrontEndUser = {
   name: string;
   lastname: string;
   mail: string;
+  bild_reference?: string;
 }
 
 export type Session = {
@@ -30,7 +25,6 @@ export type Session = {
   user_id: string;
   ip: string | undefined;
   expires_at: Date;
-  roles?: UserRole[]; // Add roles to session for faster access
 }
 
 // Validation schemas

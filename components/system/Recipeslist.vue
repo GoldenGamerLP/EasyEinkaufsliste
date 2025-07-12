@@ -6,40 +6,78 @@
                 <CardDescription>Alle derzeitigen Rezepte</CardDescription>
             </div>
             <div class="flex gap-2">
+
                 <div class="relative">
-                    <Input id="search" type="text" placeholder="Rezepte suchen..." class="pl-10"
-                        v-model="recipeSearch" />
+                    <Input id="search" type="text" placeholder="Rezepte suchen..." class="pl-10" v-model="recipeSearch"
+                        autocomplete="off" />
                     <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
-                        <SearchIcon class="size-6 text-muted-foreground" />
+                        <Select v-model="sortState">
+                            <STrigger>
+                                <LucideSortDesc class="text-muted-foreground" />
+                                <span class="sr-only">Sortieren nach</span>
+                            </STrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value="alphabetical">
+                                        Alphabetisch
+                                    </SelectItem>
+                                    <SelectItem value="mostliked">
+                                        Beliebteste
+                                    </SelectItem>
+                                    <SelectItem value="created">
+                                        Neueste
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                        <Separator :orientation="'vertical'" class="mx-1" />
                     </span>
                 </div>
-                <Select v-model="sortState">
-                    <SelectTrigger>
-                        <SelectValue placeholder="Sortieren nach" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectItem value="alphabetical">
-                                Alphabetisch
-                            </SelectItem>
-                            <SelectItem value="mostliked">
-                                Beliebteste
-                            </SelectItem>
-                            <SelectItem value="created">
-                                Neueste
-                            </SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
             </div>
+            <Drawer v-model:open="drawerState">
+                <DrawerTrigger as-child>
+                    <Button variant="outline">
+                        <Plus />
+                        <span class="sr-only">Neues Rezept</span>
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent class="mx-auto w-full max-w-4xl">
+                    <DrawerHeader>
+                        <DrawerTitle>Neues Rezept</DrawerTitle>
+                        <DrawerDescription>Gib einen Namen ein und die Zutaten.</DrawerDescription>
+                    </DrawerHeader>
+                    <div class="p-4 pb-0 max-h-1/2 overflow-y-auto scrollbar">
+                        <AutoForm :schema="RezeptErstellSchema.omit({ householdId: true })"
+                            :field-config="{ zutaten: { component: 'lebensmittelArray' }, bild: { component: 'profile' }, beschreibung: { component: 'textarea' } }"
+                            class="space-y-8" @submit="submit">
+                            <Button type="submit" class="w-full" :disabled="isLoading">
+                                <template v-if="isLoading">
+                                    <Loader2Icon class="animate-spin" />
+                                </template>
+                                <template v-else>
+                                    <Send /> Absenden
+                                </template>
+                            </Button>
+                        </AutoForm>
+                    </div>
+                    <DrawerFooter>
+                        <DrawerClose>
+                            <Button variant="destructive" class="w-full">
+                                Cancel
+                            </Button>
+                        </DrawerClose>
+                    </DrawerFooter>
+                </DrawerContent>
+            </Drawer>
         </CardHeader>
         <CardContent>
             <ol class="grid grid-cols-1 md:grid-cols-2 gap-2" v-if="status === 'success'">
                 <li v-for="recipe in data" :key="recipe._id">
                     <NuxtLink
-                        :to="{ name: 'authenticated-households-household-recipe-recipeId', params: { household: useRoute().params.household, recipeId: recipe._id } }" :prefetch-on="'interaction'"
+                        :to="{ name: 'authenticated-households-household-recipe-recipeId', params: { household: useRoute().params.household, recipeId: recipe._id } }"
+                        :prefetch-on="'interaction'"
                         class="rounded-lg border p-4 h-72 relative flex justify-end flex-col group overflow-hidden flex-auto">
-                        
+
                         <div class="flex items-center z-10">
                             <div class="grid mr-auto">
                                 <h3 class="text-xl">{{ recipe.name }}</h3>
@@ -64,44 +102,8 @@
                     Keine Rezepte gefunden.
                     <FrownIcon />
                 </li>
-                <li class="flex-auto flex items-center">
-                    <Drawer v-model:open="drawerState">
-                        <DrawerTrigger as-child>
-                            <Button class="w-full">
-                                <CarrotIcon /> Neues Rezept
-                            </Button>
-                        </DrawerTrigger>
-                        <DrawerContent class="mx-auto w-full max-w-4xl">
-                            <DrawerHeader>
-                                <DrawerTitle>Neues Rezept</DrawerTitle>
-                                <DrawerDescription>Gib einen Namen ein und die Zutaten.</DrawerDescription>
-                            </DrawerHeader>
-                            <div class="p-4 pb-0 max-h-1/2 overflow-y-auto scrollbar">
-                                <AutoForm :schema="RezeptErstellSchema.omit({ householdId: true })"
-                                    :field-config="{ zutaten: { component: 'lebensmittelArray' }, bild: { component: 'profile' }, beschreibung: { component: 'textarea' } }"
-                                    class="space-y-8" @submit="submit">
-                                    <Button type="submit" class="w-full">
-                                        <template v-if="isLoading">
-                                            <Loader2Icon class="animate-spin" />
-                                        </template>
-                                        <template v-else>
-                                            <Send /> Absenden
-                                        </template>
-                                    </Button>
-                                </AutoForm>
-                            </div>
-                            <DrawerFooter>
-                                <DrawerClose>
-                                    <Button variant="destructive" class="w-full">
-                                        Cancel
-                                    </Button>
-                                </DrawerClose>
-                            </DrawerFooter>
-                        </DrawerContent>
-                    </Drawer>
-                </li>
             </ol>
-            <div v-if="status === 'pending'" class="flex justify-center items-center flex-col">
+            <div v-if="status === 'pending'" class="flex justify-center items-center flex-col h-64">
                 <Loader2Icon class="animate-spin" />
                 <p>Laden...</p>
             </div>
@@ -110,7 +112,8 @@
 </template>
 
 <script lang="ts" setup>
-import { SearchIcon, CarrotIcon, Loader2Icon, Send, FrownIcon } from "lucide-vue-next";
+import { SelectTrigger as STrigger } from "reka-ui";
+import { LucideSortDesc, CarrotIcon, Loader2Icon, Send, FrownIcon, Plus } from "lucide-vue-next";
 import { RezeptErstellSchema, type FrontEndRezept } from "~/types/HouseHold";
 import { toast } from "vue-sonner";
 
@@ -136,6 +139,7 @@ const { data, status, error, refresh } = await useLazyFetch("/api/v1/household/r
 });
 
 const submit = async (data: Record<string, any>) => {
+    if (isLoading.value) return;
     try {
         isLoading.value = true;
         await $fetch("/api/v1/household/recipes/create", {
