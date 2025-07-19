@@ -82,7 +82,7 @@ export async function updateUserImage(userId: string, base64Image: string) {
 
   // Assuming uploadFile is a function that uploads the file and returns a URL or reference
 
-  const fileReference = await uploadFile(buffer, fileName, "image/png");
+  const fileReference = await uploadFile(buffer, fileName, "image/webp");
 
   return users.updateOne(
     { _id: userId },
@@ -117,6 +117,7 @@ export async function getUserById(
         mail: 1,
         name: 1,
         lastname: 1,
+        bild_reference: 1,
       },
     }
   );

@@ -1,14 +1,13 @@
 <template>
     <Card>
         <CardHeader class="flex flex-wrap">
-            <div class="mr-auto">
+            <div class="sm:w-full !w-auto mr-auto">
                 <CardTitle>Rezepte</CardTitle>
                 <CardDescription>Alle derzeitigen Rezepte</CardDescription>
             </div>
-            <div class="flex gap-2">
-
+            <div class="flex gap-2 flex-wrap">
                 <div class="relative">
-                    <Input id="search" type="text" placeholder="Rezepte suchen..." class="pl-10" v-model="recipeSearch"
+                    <Input id="search" type="text" placeholder="Rezepte suchen..." class="pl-12" v-model="recipeSearch"
                         autocomplete="off" />
                     <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
                         <Select v-model="sortState">
@@ -30,13 +29,14 @@
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
-                        <Separator :orientation="'vertical'" class="mx-1" />
+                        <Separator :orientation="'vertical'" class="mx-1.5 bg-input p-px" />
                     </span>
                 </div>
             </div>
+            <SystemSearchPublicRecipes />
             <Drawer v-model:open="drawerState">
                 <DrawerTrigger as-child>
-                    <Button variant="outline">
+                    <Button variant="outline" :disabled="!hasPermission('CREATOR')">
                         <Plus />
                         <span class="sr-only">Neues Rezept</span>
                     </Button>
@@ -47,7 +47,7 @@
                         <DrawerDescription>Gib einen Namen ein und die Zutaten.</DrawerDescription>
                     </DrawerHeader>
                     <div class="p-4 pb-0 max-h-1/2 overflow-y-auto scrollbar">
-                        <AutoForm :schema="RezeptErstellSchema.omit({ householdId: true })"
+                        <AutoForm :schema="RezeptErstellSchema.omit({ householdId: true, isPublic: true })"
                             :field-config="{ zutaten: { component: 'lebensmittelArray' }, bild: { component: 'profile' }, beschreibung: { component: 'textarea' } }"
                             class="space-y-8" @submit="submit">
                             <Button type="submit" class="w-full" :disabled="isLoading">
@@ -63,7 +63,7 @@
                     <DrawerFooter>
                         <DrawerClose>
                             <Button variant="destructive" class="w-full">
-                                Cancel
+                                Zurück
                             </Button>
                         </DrawerClose>
                     </DrawerFooter>
@@ -85,12 +85,15 @@
                                     recipe.beschreibung }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-2 mt-2 flex-wrap-reverse">
+                        <div class="flex gap-2 mt-2 flex-wrap">
                             <Badge>
                                 <NuxtTime relative :datetime="recipe.created" style="long" numeric="auto" />
                             </Badge>
                             <Badge>{{ recipe.zutaten.length }} Zutat(en)</Badge>
                             <Badge>Ungefähr {{ geldFormat.format(calculateCost(recipe)) }} pro Portion</Badge>
+                            <Badge v-if="recipe.isPublic">
+                                <DoorOpen /> Öffentlich
+                            </Badge>
                         </div>
 
                         <img :src="`/api/v1/cms/${recipe.bild_reference}`" alt="Rezeptbild"
@@ -113,9 +116,10 @@
 
 <script lang="ts" setup>
 import { SelectTrigger as STrigger } from "reka-ui";
-import { LucideSortDesc, CarrotIcon, Loader2Icon, Send, FrownIcon, Plus } from "lucide-vue-next";
+import { LucideSortDesc, CarrotIcon, Loader2Icon, Send, FrownIcon, Plus, DoorOpen } from "lucide-vue-next";
 import { RezeptErstellSchema, type FrontEndRezept } from "~/types/HouseHold";
 import { toast } from "vue-sonner";
+import { hasPermission } from "~/composable/useRole";
 
 const geldFormat = new Intl.NumberFormat("de-DE", {
     style: "currency",

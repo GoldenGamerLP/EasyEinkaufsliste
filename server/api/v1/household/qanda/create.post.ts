@@ -1,4 +1,4 @@
-import { questionSChema, validation } from "~/types/QandA";
+import { validation } from "~/types/QandA";
 import * as z from "zod";
 
 export default defineEventHandler(async (event) => {
@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
 
     const { householdId, title, description, answers, ttl } = data;
 
-    return await createQuestion(householdId, title, description, answers, ttl);
+    //return await createQuestion(householdId, title, description, answers, ttl);
+    //delete maybe?! TODO
 });
 

@@ -20,12 +20,12 @@
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Profile</DropdownMenuItem>
-                            <DropdownMenuItem>Billing</DropdownMenuItem>
-                            <DropdownMenuItem>Team</DropdownMenuItem>
-                            <DropdownMenuItem>Subscription</DropdownMenuItem>
+                            <SystemRecipeVisibillityChange :recipe="data" />
+
+                            <DropdownMenuItem>
+                                Bearbeiten
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>Löschen</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
 
@@ -39,6 +39,10 @@
                         <Badge>{{ data.zutaten?.length || 0 }} Zutat(en)</Badge>
                         <Badge>
                             Ungefähr {{ geldFormat.format(calculateCost(data)) }} pro Portion
+                        </Badge>
+                        <Badge v-if="data.isPublic">
+                            <DoorOpen />
+                            Öffentlich
                         </Badge>
                     </div>
                 </div>
@@ -79,19 +83,21 @@
 </template>
 
 <script setup lang="ts">
-import { Loader2Icon, ChevronsLeft, MoreVertical } from "lucide-vue-next";
+import { Loader2Icon, ChevronsLeft, MoreVertical, DoorOpen } from "lucide-vue-next";
 import { useRouter } from 'vue-router';
 import { useMembers } from "~/composable/members";
+import type { FrontEndRezept } from "~/types/HouseHold";
 
 const portions = ref(1);
 const recipeId = useRoute().params.recipeId;
 const router = useRouter();
 const members = useMembers();
 
-const { data, status } = await useFetch("/api/v1/household/recipes/get", {
+const { data, status } = await useFetch<FrontEndRezept>("/api/v1/household/recipes/get", {
     query: {
         recipeId,
-    }
+    },
+    deep: true,
 });
 
 const geldFormat = new Intl.NumberFormat("de-DE", {

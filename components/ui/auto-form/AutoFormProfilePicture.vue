@@ -38,7 +38,7 @@ const resizer = `self.addEventListener('message', async (event) => {
 
         context.drawImage(bitmap, 0, 0, width, height);
 
-        const blob = await offscreencanvas.convertToBlob({ quality: 0.1, type: 'image/png' });
+        const blob = await offscreencanvas.convertToBlob({ quality: 0, type: 'image/webp' });
 
         const reader = new FileReader();
         reader.onloadend = () => {

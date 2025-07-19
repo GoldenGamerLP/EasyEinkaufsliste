@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
 
     const { questionId } = data;
 
-    return await getAnswersByQuestionId(questionId);
+    return await getAnswersByQuestionId(questionId) || [];
 });
 
 const validation = z.object({

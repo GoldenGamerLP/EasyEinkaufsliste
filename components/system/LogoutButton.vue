@@ -1,24 +1,31 @@
 <template>
-    <Popover>
-        <PopoverTrigger as-child>
-            <Button variant="secondary" @click="logout" :disabled="isLoading">
-                <component :is="isLoading ? Loader2 : UserRoundX" />
-                {{ user?.name }}
-                <span class="sr-only">Angemeldet als {{ user?.mail }}. Ausloggen?</span>
-            </Button>
-        </PopoverTrigger>
-        <PopoverContent>Ausloggen?</PopoverContent>
-    </Popover>
+    <TooltipProvider>
+        <Tooltip>
+            <TooltipTrigger as-child> <Button variant="secondary" @click="logout" :disabled="isLoading"
+                    :class="props.class">
+                    <SystemUserImageDisplay class="size-6" />
+                    {{ user?.name }}
+                    <span class="sr-only">Angemeldet als {{ user?.mail }}. Ausloggen?</span>
+                </Button></TooltipTrigger>
+            <TooltipContent>
+                <p>Als {{ user?.name }} {{ user?.lastname }} ausloggen?</p>
+            </TooltipContent>
+        </Tooltip>
+    </TooltipProvider>
+
+
 </template>
 
 <script lang="ts" setup>
-import { UserRoundX, Loader2 } from 'lucide-vue-next';
 import { useUser } from '~/composable/auth';
 import { toast } from 'vue-sonner';
+import type { HTMLAttributes } from 'vue';
+import { cn } from '~/lib/utils';
+
+const props = defineProps<{ class?: HTMLAttributes['class'] }>()
 
 const user = useUser();
 const isLoading = ref(false);
-
 
 const logout = async () => {
     if (isLoading.value) return;

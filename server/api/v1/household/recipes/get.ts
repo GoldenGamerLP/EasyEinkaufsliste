@@ -1,5 +1,5 @@
-import { getRecipe } from "~/server/utils/HouseHoldUtils";
 import * as z from "zod";
+import { getRecipe } from "~/server/utils/recipeUtils";
 
 export default defineEventHandler(async (event) => {
   const { data, error } = await getValidatedQuery(

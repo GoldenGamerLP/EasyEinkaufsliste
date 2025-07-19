@@ -23,6 +23,7 @@ const LebensmittelSchema = z.object({
 
 const RezeptErstellSchema = z.object({
   householdId: z.string().min(24, { message: "Ungültige Haushalts-ID." }),
+  isPublic: z.boolean().default(false),
   name: z.string().min(5),
   beschreibung: z.string().optional(),
   bild: z.string({ message: "Ein Bild wird benötigt." }),
@@ -49,11 +50,17 @@ interface Rezept {
     portion: number;
     lebensmittel_id: string;
   }[];
-  created: Date;
-  last_updated: Date;
+  created: Date | string;
+  last_updated: Date | string;
   createdby: string;
   householdId: string;
   isPublic: boolean;
+}
+
+interface SharedRezept {
+  recipeId: string;
+  householdId: string;
+  sharedAt: Date | string; // Date when the recipe was shared
 }
 
 interface FrontEndRezept {
@@ -64,10 +71,11 @@ interface FrontEndRezept {
   zutaten: Lebensmittel & {
     portion: number;
   }[];
-  created: Date;
-  last_updated: Date;
+  created: Date | string;
+  last_updated: Date | string;
   createdby: string;
   householdId: string;
+  isPublic: boolean | undefined;
 }
 
 type RezeptErstellType = z.infer<typeof RezeptErstellSchema>;
@@ -80,7 +88,7 @@ interface HouseHold {
     [userId: string]: UserRole; // Map of user IDs to their roles
   }
   createdBy: string; // User ID of the creator
-  createdAt: Date; // Date when the household was created
+  createdAt: Date | string; // Date | string when the household was created
 }
 
 export {
@@ -92,4 +100,5 @@ export {
   type RezeptErstellType,
   type HouseHold,
   type FrontEndRezept,
+  type SharedRezept,
 };

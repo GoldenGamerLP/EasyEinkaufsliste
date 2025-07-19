@@ -1,10 +1,13 @@
 <template>
     <div>
-        <header class="w-full border-b mb-2 px-1">
-            <h1 class="text-3xl">EasyHouseholds</h1>
-            <p class="text-muted-foreground">Verwalte deine Haushalte hier.</p>
+        <header class="flex items-center border-b mb-2 px-1">
+            <div>
+                <h1 class="text-3xl">EasyHouseholds</h1>
+                <p class="text-muted-foreground">Verwalte deine Haushalte hier.</p>
+            </div>
+            <SystemLogoutButton class="ml-auto" />
         </header>
-        <ol class="px-1 flex flex-row gap-2">
+        <ol class="px-1 flex flex-row gap-2 flex-wrap">
             <li class="rounded-lg border max-w-sm relative group overflow-hidden w-full" v-for="household in data">
                 <NuxtLink :to="`/authenticated/households/${household._id}`" class="block">
                     <div class="mask-b-from-50% mask-b-to-70%">
@@ -16,7 +19,9 @@
                             {{ household.name }}
                             <Badge>{{ household.members.length }} Teilnehmer</Badge>
                         </h2>
-                        <p class="text-muted-foreground">Erstellt am <NuxtTime :datetime="household.createdAt" /></p>
+                        <p class="text-muted-foreground">Erstellt am
+                            <NuxtTime :datetime="household.createdAt" />
+                        </p>
                     </div>
                 </NuxtLink>
             </li>
@@ -34,8 +39,8 @@
                             <DrawerDescription>Erstelle einen Haushalt und füge Personen hinzu!</DrawerDescription>
                         </DrawerHeader>
                         <div class="p-4 pb-0 max-h-1/2 overflow-y-auto scrollbar">
-                            <AutoForm :schema="validation.omit({members: true})" class="space-y-8 px-2" @submit="onSubmit"
-                                :loading="isLoading">
+                            <AutoForm :schema="validation.omit({ members: true })" class="space-y-8 px-2"
+                                @submit="onSubmit" :loading="isLoading">
                                 <Button type="submit" class="w-full">
                                     <SendIcon /> Absenden!
                                 </Button>
@@ -59,8 +64,10 @@
 import { PlusIcon, SendIcon } from 'lucide-vue-next';
 import * as z from "zod";
 import { toast } from 'vue-sonner';
+import { useUser } from '~/composable/auth';
 
 const isLoading = ref(false);
+const user = useUser();
 
 definePageMeta({
     middleware: ["only-logged-in"]
@@ -76,7 +83,7 @@ const validation = z.object({
     members: z.array(z.string()).default([]),
 });
 
-const onSubmit = async (data: Record<string,any>) => {
+const onSubmit = async (data: Record<string, any>) => {
     isLoading.value = true;
     try {
         await $fetch("/api/v1/household/create", {

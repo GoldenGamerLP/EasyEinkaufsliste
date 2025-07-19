@@ -1,7 +1,6 @@
 <template>
     <div class="flex items-center justify-around w-full">
-        <component :is="props.member.bild_reference ? 'img' : User" :src="props.member.bild_reference"
-            class="w-8 h-8 rounded-full object-cover mr-2" />
+        <SystemUserImageDisplay class="size-8 mr-1" :member="props.member" />
         <div class="grid">
             <span class="text-sm font-medium">{{ props.member.name }} {{ props.member.lastname }}</span>
             <span class="text-xs text-muted-foreground">{{ props.member.mail }}</span>
@@ -41,23 +40,25 @@ import type { FrontEndUser } from '~/types/User';
 import { User } from 'lucide-vue-next';
 import { UserRoles, type UserRole } from '~/types/HouseHold';
 import { toast } from 'vue-sonner';
+import { useRole } from '~/composable/useRole';
+import { useUser } from '~/composable/auth';
 
 const props = defineProps<{
     member: FrontEndUser;
-    canEdit: boolean;
 }>();
 
 const isRemoving = ref(false);
 const household = useHousehold();
+const currentUser = useUser();
 
+const currentRole = ref(useRole(props.member));
 
-const getCurrentRole = () => {
-    return household.value?.memberRoles[props.member._id] || undefined;
-}
+const canEdit = computed(() => {
+    // Only allow editing if the current user is the creator or the member is not the current user
+    return useRole() === 'CREATOR' && props.member._id !== currentUser.value?._id;
+});
 
-const currentRole = ref(getCurrentRole());
-
-watch(currentRole, (oldRole, newRole) => {
+watch(currentRole, (newRole, oldRole) => {
     //Update the role and optimistically update the userrole
     if (oldRole !== newRole) {
         onRoleChange(newRole, props.member, oldRole);

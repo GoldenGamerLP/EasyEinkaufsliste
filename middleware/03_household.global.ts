@@ -1,12 +1,12 @@
 import { useHousehold } from "~/composable/household";
 
-export default defineNuxtRouteMiddleware((from, to) => {
+export default defineNuxtRouteMiddleware(async (from, to) => {
     const household = useHousehold();
     if(!to.params.household) {
         return;
     }
 
-    const { data } = useFetch("/api/v1/household/get", {
+    const { data } = await useFetch("/api/v1/household/get", {
         query: {
             householdId: to.params.household as string
         }

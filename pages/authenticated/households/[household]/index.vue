@@ -15,11 +15,13 @@
                         Zurück
                     </Button>
                 </NuxtLink>
+                <Separator orientation="vertical" />
                 <SystemAddMember />
+                <Separator orientation="vertical" />
                 <SystemVisualChangeButton />
             </div>
         </header>
-        <main class="max-w-4xl w-full mx-auto space-y-4">
+        <main class="max-w-4xl w-full mx-auto space-y-4 mt-2">
             <SystemQAndA />
             <SystemRecipeslist />
         </main>

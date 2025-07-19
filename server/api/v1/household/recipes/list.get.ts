@@ -1,7 +1,6 @@
 import { h } from "vue";
 import * as z from "zod";
-import { getRecipesForHousehold } from "~/server/utils/HouseHoldUtils";
-
+import { getRecipesForHousehold } from "~/server/utils/recipeUtils";
 export default defineEventHandler(async (event) => {
     const user = event.context.user;
 

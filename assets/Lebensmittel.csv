@@ -1,84 +1,85 @@
 name,lebensmittel_gruppe,preis,verpackungsart,verpackungs_menge,verpackungsmenge_einheit,standard_portion
-Apfel,Obst,0.50,Stück,1,Stück,1
-Banane,Obst,0.40,Stück,1,Stück,1
-Orange,Obst,0.60,Stück,1,Stück,1
-Erdbeeren,Obst,3.20,Schale,250,Gramm,125
-Heidelbeeren,Obst,2.90,Schale,125,Gramm,125
-Zitrone,Obst,0.35,Stück,1,Stück,1
-Weintrauben,Obst,2.80,Schale,500,Gramm,150
-Kiwi,Obst,0.70,Stück,1,Stück,1
-Birne,Obst,0.60,Stück,1,Stück,1
-Avocado,Obst,1.80,Stück,1,Stück,1
-Mango,Obst,2.50,Stück,1,Stück,1
-Karotte,Gemüse,0.30,Stück,1,Stück,1
-Kartoffel,Gemüse,2.20,Beutel,2000,Gramm,200
-Süßkartoffel,Gemüse,1.20,Stück,1,Stück,1
-Tomate,Gemüse,0.45,Stück,1,Stück,1
-Gurke,Gemüse,1.10,Stück,1,Stück,1
-Eisbergsalat,Gemüse,1.60,Kopf,1,Stück,1
-Zwiebel,Gemüse,0.25,Stück,1,Stück,1
-Knoblauch,Gemüse,0.30,Knolle,1,Stück,1
-Brokkoli,Gemüse,1.90,Kopf,1,Stück,1
-Paprika (rot),Gemüse,0.90,Stück,1,Stück,1
-Paprika (gelb),Gemüse,0.90,Stück,1,Stück,1
-Zucchini,Gemüse,1.30,Stück,1,Stück,1
-Champignons,Gemüse,1.80,Schale,250,Gramm,125
-Spinat (frisch),Gemüse,2.00,Packung,500,Gramm,250
-Hähnchenbrustfilet,Fleisch,5.50,Packung,400,Gramm,200
-Rinderhackfleisch,Fleisch,6.50,Packung,500,Gramm,250
-Schweineschnitzel,Fleisch,4.20,Packung,300,Gramm,150
-Putenbrust (Aufschnitt),Fleisch_Wurstwaren,2.50,Packung,150,Gramm,25
-Kochschinken (Aufschnitt),Fleisch_Wurstwaren,2.20,Packung,100,Gramm,20
-Salami (Aufschnitt),Fleisch_Wurstwaren,2.80,Packung,150,Gramm,25
-Wiener Würstchen,Fleisch_Wurstwaren,3.50,Packung,400,Gramm,200
-Lachsfilet,Fisch,4.80,Packung,200,Gramm,200
-Thunfisch (im eigenen Saft),Fisch,1.50,Dose,185,Gramm,1 Dose
-Kabeljaufilet (TK),Fisch,4.00,Packung,250,Gramm,250
-Milch (1.5% Fett),Milchprodukte,1.10,Packung,1,Liter,200
-Naturjoghurt,Milchprodukte,0.80,Becher,500,Gramm,150
-Magerquark,Milchprodukte,1.20,Becher,500,Gramm,100
-Gouda (in Scheiben),Milchprodukte,2.60,Packung,150,Gramm,30
-Feta,Milchprodukte,2.00,Packung,150,Gramm,75
-Mozzarella,Milchprodukte,0.90,Kugel,125,Gramm,125
-Hüttenkäse,Milchprodukte,1.30,Becher,200,Gramm,100
-Eier (Größe M),Eier,0.30,Stück,1,Stück,1
-Butter,Fette_Oele,2.60,Packung,250,Gramm,10
-Olivenöl,Fette_Oele,8.50,Flasche,750,Milliliter,15
-Sonnenblumenöl,Fette_Oele,3.00,Flasche,1,Liter,15
-Spaghetti,Getreideprodukte,1.10,Packung,500,Gramm,125
-Basmatireis,Getreideprodukte,2.70,Packung,1000,Gramm,100
-Haferflocken,Getreideprodukte,1.60,Packung,500,Gramm,50
-Vollkornbrot (Laib),Backwaren,3.00,Laib,500,Gramm,50
-Brötchen,Backwaren,0.45,Stück,1,Stück,1
-Toastbrot (Weizen),Backwaren,1.50,Packung,500,Gramm,25
-Toastbrot (Vollkorn),Backwaren,1.80,Packung,500,Gramm,25
-Roggenbrot (Laib),Backwaren,3.80,Laib,750,Gramm,50
-Ciabatta,Backwaren,1.80,Stück,1,Stück,1
-Weizenmehl (Type 405),Backzutaten,0.90,Packung,1000,Gramm,1000
-Zucker,Backzutaten,1.10,Packung,1000,Gramm,1000
-Salz,Gewürze,0.60,Packung,500,Gramm,500
-Pfeffer (gemahlen),Gewürze,2.00,Streuer,50,Gramm,50
-Petersilie (frisch),Kräuter,1.20,Bund,1,Bund,1
-Schnittlauch (frisch),Kräuter,1.00,Bund,1,Bund,1
-Frischhefe,Backzutaten,0.35,Würfel,42,Gramm,42
-Kaffeebohnen,Getränke,7.50,Packung,500,Gramm,15
-Mineralwasser (still),Getränke,0.55,Flasche,1,Liter,250
-Orangensaft,Getränke,1.60,Packung,1,Liter,200
-Apfelsaft,Getränke,1.40,Packung,1,Liter,200
-Linsen (rot),Hülsenfrüchte,2.10,Packung,500,Gramm,80
-Kichererbsen (Dose),Hülsenfrüchte,0.95,Dose,400,Gramm,200
-Tomaten (passiert),Konserven,0.80,Packung,500,Gramm,250
-Erbsen (Konserve),Konserven,1.00,Dose,400,Gramm,200
-Mais (Konserve),Konserven,0.85,Dose,285,Gramm,140
-Honig,Aufstrich,4.20,Glas,500,Gramm,20
-Erdbeermarmelade,Aufstrich,2.70,Glas,450,Gramm,25
-Erdnussbutter,Aufstrich,3.00,Glas,350,Gramm,20
-Müsli (Basismischung),Frühstück,3.50,Packung,750,Gramm,50
-Cornflakes,Frühstück,2.50,Packung,500,Gramm,30
-Kartoffelchips,Snacks,1.80,Tüte,175,Gramm,30
-Schokolade (Vollmilch),Süßigkeiten,1.20,Tafel,100,Gramm,25
-Gummibärchen,Süßigkeiten,1.50,Tüte,200,Gramm,50
-Ketchup,Saucen,2.00,Flasche,500,Milliliter,30
-Senf (mittelscharf),Saucen,1.00,Tube,200,Milliliter,15
-Mayonnaise,Saucen,1.80,Glas,250,Gramm,15
-Essig (Branntwein),Saucen,0.70,Flasche,750,Milliliter,15
+Apfel,Obst,0.55,Stück,1,Stück,1
+Banane,Obst,0.45,Stück,1,Stück,1
+Orange,Obst,0.65,Stück,1,Stück,1
+Erdbeeren,Obst,3.50,Schale,250,Gramm,125
+Heidelbeeren,Obst,3.10,Schale,125,Gramm,125
+Zitrone,Obst,0.40,Stück,1,Stück,1
+Weintrauben,Obst,3.00,Schale,500,Gramm,150
+Kiwi,Obst,0.75,Stück,1,Stück,1
+Birne,Obst,0.65,Stück,1,Stück,1
+Avocado,Obst,2.00,Stück,1,Stück,1
+Mango,Obst,2.70,Stück,1,Stück,1
+Ananas,Obst,3.50,Stück,1,Stück,1
+Karotte,Gemüse,0.35,Stück,1,Stück,1
+Kartoffel,Gemüse,2.50,Beutel,2000,Gramm,200
+Süßkartoffel,Gemüse,1.30,Stück,1,Stück,1
+Tomate,Gemüse,0.50,Stück,1,Stück,1
+Gurke,Gemüse,1.20,Stück,1,Stück,1
+Eisbergsalat,Gemüse,1.80,Kopf,1,Stück,1
+Zwiebel,Gemüse,0.30,Stück,1,Stück,1
+Knoblauch,Gemüse,0.35,Knolle,1,Stück,1
+Brokkoli,Gemüse,2.00,Kopf,1,Stück,1
+Paprika (rot),Gemüse,1.00,Stück,1,Stück,1
+Paprika (gelb),Gemüse,1.00,Stück,1,Stück,1
+Zucchini,Gemüse,1.40,Stück,1,Stück,1
+Champignons,Gemüse,2.00,Schale,250,Gramm,125
+Spinat (frisch),Gemüse,2.20,Packung,500,Gramm,250
+Hähnchenbrustfilet,Fleisch,6.00,Packung,400,Gramm,200
+Rinderhackfleisch,Fleisch,7.00,Packung,500,Gramm,250
+Schweineschnitzel,Fleisch,4.50,Packung,300,Gramm,150
+Putenbrust (Aufschnitt),Fleisch_Wurstwaren,2.80,Packung,150,Gramm,25
+Kochschinken (Aufschnitt),Fleisch_Wurstwaren,2.50,Packung,100,Gramm,20
+Salami (Aufschnitt),Fleisch_Wurstwaren,3.00,Packung,150,Gramm,25
+Wiener Würstchen,Fleisch_Wurstwaren,3.80,Packung,400,Gramm,200
+Lachsfilet,Fisch,5.00,Packung,200,Gramm,200
+Thunfisch (im eigenen Saft),Fisch,1.70,Dose,185,Gramm,1 Dose
+Kabeljaufilet (TK),Fisch,4.50,Packung,250,Gramm,250
+Milch (1.5% Fett),Milchprodukte,1.20,Packung,1,Liter,200
+Naturjoghurt,Milchprodukte,0.90,Becher,500,Gramm,150
+Magerquark,Milchprodukte,1.30,Becher,500,Gramm,100
+Gouda (in Scheiben),Milchprodukte,2.80,Packung,150,Gramm,30
+Feta,Milchprodukte,2.20,Packung,150,Gramm,75
+Mozzarella,Milchprodukte,1.00,Kugel,125,Gramm,125
+Hüttenkäse,Milchprodukte,1.40,Becher,200,Gramm,100
+Eier (Größe M),Eier,0.35,Stück,1,Stück,1
+Butter,Fette_Oele,2.80,Packung,250,Gramm,10
+Olivenöl,Fette_Oele,9.00,Flasche,750,Milliliter,15
+Sonnenblumenöl,Fette_Oele,3.50,Flasche,1,Liter,15
+Spaghetti,Getreideprodukte,1.20,Packung,500,Gramm,125
+Basmatireis,Getreideprodukte,3.00,Packung,1000,Gramm,100
+Haferflocken,Getreideprodukte,1.80,Packung,500,Gramm,50
+Vollkornbrot (Laib),Backwaren,3.20,Laib,500,Gramm,50
+Brötchen,Backwaren,0.50,Stück,1,Stück,1
+Toastbrot (Weizen),Backwaren,1.60,Packung,500,Gramm,25
+Toastbrot (Vollkorn),Backwaren,2.00,Packung,500,Gramm,25
+Roggenbrot (Laib),Backwaren,4.00,Laib,750,Gramm,50
+Ciabatta,Backwaren,2.00,Stück,1,Stück,1
+Weizenmehl (Type 405),Backzutaten,1.00,Packung,1000,Gramm,1000
+Zucker,Backzutaten,1.20,Packung,1000,Gramm,1000
+Salz,Gewürze,0.70,Packung,500,Gramm,500
+Pfeffer (gemahlen),Gewürze,2.20,Streuer,50,Gramm,50
+Petersilie (frisch),Kräuter,1.30,Bund,1,Bund,1
+Schnittlauch (frisch),Kräuter,1.10,Bund,1,Bund,1
+Frischhefe,Backzutaten,0.40,Würfel,42,Gramm,42
+Kaffeebohnen,Getränke,8.00,Packung,500,Gramm,15
+Mineralwasser (still),Getränke,0.60,Flasche,1,Liter,250
+Orangensaft,Getränke,1.80,Packung,1,Liter,200
+Apfelsaft,Getränke,1.60,Packung,1,Liter,200
+Linsen (rot),Hülsenfrüchte,2.30,Packung,500,Gramm,80
+Kichererbsen (Dose),Hülsenfrüchte,1.00,Dose,400,Gramm,200
+Tomaten (passiert),Konserven,0.90,Packung,500,Gramm,250
+Erbsen (Konserve),Konserven,1.10,Dose,400,Gramm,200
+Mais (Konserve),Konserven,0.95,Dose,285,Gramm,140
+Honig,Aufstrich,4.50,Glas,500,Gramm,20
+Erdbeermarmelade,Aufstrich,3.00,Glas,450,Gramm,25
+Erdnussbutter,Aufstrich,3.20,Glas,350,Gramm,20
+Müsli (Basismischung),Frühstück,3.80,Packung,750,Gramm,50
+Cornflakes,Frühstück,2.70,Packung,500,Gramm,30
+Kartoffelchips,Snacks,2.00,Tüte,175,Gramm,30
+Schokolade (Vollmilch),Süßigkeiten,1.30,Tafel,100,Gramm,25
+Gummibärchen,Süßigkeiten,1.70,Tüte,200,Gramm,50
+Ketchup,Saucen,2.20,Flasche,500,Milliliter,30
+Senf (mittelscharf),Saucen,1.20,Tube,200,Milliliter,15
+Mayonnaise,Saucen,2.00,Glas,250,Gramm,15
+Essig (Branntwein),Saucen,0.80,Flasche,750,Milliliter,15

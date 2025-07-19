@@ -1,7 +1,9 @@
 <template>
-    <Button variant="ghost" size="icon" @click="state ? toWhite() : toDark()">
-        <component :is="state ? Moon : Sun" class="w-5 h-5" />
-    </Button>
+    <ClientOnly>
+        <Button variant="ghost" size="icon" @click="state ? toWhite() : toDark()">
+            <component :is="state ? Moon : Sun" class="w-5 h-5" />
+        </Button>
+    </ClientOnly>
 </template>
 
 <script lang="ts" setup>

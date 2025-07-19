@@ -17,10 +17,10 @@
             </DrawerHeader>
             <ol class="p-4 pb-0 grid gap-2">
                 <li>
-                    <Combobox by="label" v-model="person">
+                    <Combobox by="label" v-model="person" :disabled="!hasPermission('CREATOR')">
                         <ComboboxAnchor class="w-full">
                             <div class="relative w-full items-center">
-                                <ComboboxInput class="pl-9" :display-value="(val) => val.mail ?? ''"
+                                <ComboboxInput class="pl-9" :display-value="(val) => val?.mail ?? ''"
                                     placeholder="Email des Benutzers..." v-model="search" />
                                 <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
                                     <UserPlus class="size-4 text-muted-foreground" />
@@ -58,7 +58,7 @@
                     </Combobox>
                 </li>
                 <li v-for="member in members" :key="member._id">
-                    <SystemMemberEntry :member="member" :can-edit="isCreator && !isSelf(member)" />
+                    <SystemMemberEntry :member="member" />
                 </li>
             </ol>
             <DrawerFooter>
@@ -81,6 +81,8 @@ import type { FrontEndUser } from '~/types/User';
 import { toast } from 'vue-sonner';
 import { useHousehold } from '~/composable/household';
 import { UserRoles, type UserRole } from '~/types/HouseHold';
+import { hasPermission, useRole } from '~/composable/useRole';
+import { usePermission } from '@vueuse/core';
 const user = useUser();
 const members = useMembers();
 
@@ -99,10 +101,6 @@ const { data, status, refresh } = useLazyFetch('/api/v1/household/members/search
         userMail: search,
     },
     watch: [search],
-});
-
-const isCreator = computed(() => {
-    return household.value?.memberRoles[user.value?._id || ''] === UserRoles[2];
 });
 
 const computedResult = computed(() => {

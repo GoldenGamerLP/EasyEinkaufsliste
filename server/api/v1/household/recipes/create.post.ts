@@ -1,5 +1,5 @@
-import { insertNewRecipe } from "~/server/utils/HouseHoldUtils";
 import { RezeptErstellSchema } from "~/types/HouseHold";
+import { insertNewRecipe } from "~/server/utils/recipeUtils";
 
 export default defineEventHandler(async (event) => {
     const user = event.context.user;

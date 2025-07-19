@@ -8,7 +8,7 @@ self.addEventListener('message', async (event) => {
 
         context?.drawImage(bitmap, 0, 0, width, height);
 
-        const blob = await offscreencanvas.convertToBlob({ quality: 0.5, type: 'image/bmp' });
+        const blob = await offscreencanvas.convertToBlob({ quality: 0.1, type: 'image/webp' });
 
         // Convert blob to base64
         const reader = new FileReader();

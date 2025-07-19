@@ -46,7 +46,7 @@ provide(FieldContextKey, fieldContext)
         <Button type="button" variant="secondary" @click="push(null)"
           :disabled="fields.length > 0 && fields[fields.length - 1]?.value == null">
           <PlusIcon class="mr-2" :size="16" />
-          Add
+          Neues Lebensmittel
         </Button>
         <FormMessage />
       </FormItem>

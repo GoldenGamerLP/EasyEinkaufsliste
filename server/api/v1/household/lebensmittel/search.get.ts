@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { findLebensmittel } from "~/server/utils/HouseHoldUtils";
+import { findLebensmittel } from "~/server/utils/lebensmittelUtils";
 
 export default defineEventHandler(async (event) => {
   const { success, data, error } = await getValidatedQuery(
@@ -14,7 +14,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return await findLebensmittel(data.searchType, data.limit, data.lebensmittelname);
+  return await findLebensmittel(
+    data.searchType,
+    data.limit,
+    data.lebensmittelname
+  );
 });
 
 const validation = z.object({

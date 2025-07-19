@@ -2,16 +2,23 @@ import * as z from 'zod';
 
 type AnswerData = {
   _id?: string;
-  questionId?: string;
   answer: {
     userId: string;
     answerId: string;
+    date: Date | string;
   }[];
 };
 
+type QuestionSkeleton = {
+  title: string;
+  description: string;
+  answers: AnswerPosibillity[];
+  ttl?: number; // Time to live in milliseconds
+}
+
 type Question = {
   // Optional systemId for future use, e.g., for automatic question generation
-  systemId?: string;
+  generatorId?: string;
   householdId?: string;
   title: string;
   description: string;
@@ -55,5 +62,5 @@ const validation = z.object({
     ttl: z.number().int().positive("TTL must be a positive integer").default(5 * 60 * 1000),
 });
 
-export type { AnswerData, Question, AnswerPosibillity };
+export type { AnswerData, Question, AnswerPosibillity, QuestionSkeleton };
 export { questionSChema, validation };
