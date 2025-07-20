@@ -33,7 +33,7 @@
                     </span>
                 </div>
             </div>
-            <SystemSearchPublicRecipes />
+            <SystemSearchPublicRecipes @update:addrecipe="(recipe) => data?.push(recipe)" />
             <Drawer v-model:open="drawerState">
                 <DrawerTrigger as-child>
                     <Button variant="outline" :disabled="!hasPermission('CREATOR')">
@@ -84,6 +84,7 @@
                                 <span class="text-muted-foreground text-ellipsis overflow-hidden whitespace-nowrap">{{
                                     recipe.beschreibung }}</span>
                             </div>
+                            <SystemMarkRecipeAsFavorit type="icon" :recipe="recipe" />
                         </div>
                         <div class="flex gap-2 mt-2 flex-wrap">
                             <Badge>

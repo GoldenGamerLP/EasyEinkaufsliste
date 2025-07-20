@@ -14,9 +14,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { recipeId } = data;
+  const { recipeId, householdId } = data;
 
-  const recipe = await getRecipe(recipeId);
+  const recipe = await getRecipe(recipeId, householdId);
 
   if (!recipe) {
     throw createError({
@@ -45,12 +45,10 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  handleCacheHeaders(event, { maxAge: 1 * 60 * 60, cacheControls: ['public'] });
   return recipe;
 });
 
 const validation = z.object({
-  recipeId: z.string().min(1, {
-    message: "Die Rezept-ID ist erforderlich.",
-  }),
+  recipeId: z.string().min(24),
+  householdId: z.string().optional(),
 });

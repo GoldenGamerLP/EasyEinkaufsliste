@@ -4,10 +4,16 @@ import { getRandomRecipesFromHousehold } from "./recipeUtils";
 
 const handleAnsweredSurvey = (question: Question, answer: AnswerData) => {
   // Handle the logic when a survey is answered
+  console.log("Survey answered", {
+    questionId: question._id,
+    answerId: answer._id,
+    answerTitle: question.title,
+  });
 };
 
 const createQuestionFromHousehold = async (householdId: string) => {
   const recipes = await getRandomRecipesFromHousehold(householdId, 3);
+  console.log("Length: " + recipes.map((recipe) => recipe.name));
 
   if (recipes.length < 3) {
     console.log(

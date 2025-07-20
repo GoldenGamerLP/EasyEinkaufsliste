@@ -1,8 +1,15 @@
-import { FrontEndRezept, Rezept, RezeptErstellType } from "~/types/HouseHold";
+import {
+  FrontEndRezept,
+  HouseholdRezept,
+  Rezept,
+  RezeptErstellType,
+} from "~/types/HouseHold";
 import database from "./DBUtils";
 import { ObjectId } from "mongodb";
 
 const rezeptCollection = database.collection<Rezept>("rezepte");
+const rezepteHouseholdCollection =
+  database.collection<HouseholdRezept>("household_recipes");
 
 export const findPublicRecipes = async (
   search: string,
@@ -50,7 +57,7 @@ export const findPublicRecipes = async (
           },
         },
         created: { $first: "$created" },
-        last_updated: { $first: "$last_updated" },
+        lastModified: { $first: "$lastModified" },
         createdby: { $first: "$createdby" },
         householdId: { $first: "$householdId" },
         isPublic: { $first: "$isPublic" },
@@ -67,116 +74,69 @@ export const getRandomRecipesFromHousehold = async (
   householdId: string,
   size: number
 ) => {
-  const agg = rezeptCollection.aggregate([
-    {
-      $match: { householdId }
-    },
-    {
-      $sample: { size }
-    },
-  ]);
-
-  return await agg.toArray() as FrontEndRezept[];
-};
-
-export const getRecipe = async (
-  recipeId: string
-): Promise<FrontEndRezept | null> => {
-  const recipe = await rezeptCollection
+  const recipes = await rezepteHouseholdCollection
     .aggregate([
-      { $match: { _id: new ObjectId(recipeId) } },
-      { $unwind: { path: "$zutaten" } },
+      {
+        $match: { householdId },
+      },
+      {
+        $sample: { size },
+      },
       {
         $addFields: {
-          zutatenId: {
-            $toObjectId: "$zutaten.lebensmittel_id",
+          recipeId: {
+            $toObjectId: "$recipeId",
           },
         },
       },
       {
         $lookup: {
-          from: "lebensmittel",
-          localField: "zutatenId",
+          from: "rezepte",
+          localField: "recipeId",
           foreignField: "_id",
-          as: "zutat",
+          as: "recipe",
+        },
+      },
+      { $unwind: "$recipe" },
+      {
+        $match: {
+          $or: [
+            {
+              "recipe.householdId": householdId,
+            },
+            {
+              householdId,
+              isEnabled: true,
+            },
+          ],
         },
       },
       {
         $group: {
-          _id: "$_id",
-          name: { $first: "$name" },
-          beschreibung: { $first: "$beschreibung" },
-          bild_reference: { $first: "$bild_reference" },
-          zutaten: {
-            $push: {
-              $mergeObjects: [
-                { $first: "$zutat" },
-                { portion: "$zutaten.portion" },
-              ],
-            },
-          },
-          created: { $first: "$created" },
-          last_updated: { $first: "$last_updated" },
-          createdby: { $first: "$createdby" },
-          householdId: { $first: "$householdId" },
-          isPublic: { $first: "$isPublic" },
+          _id: "$recipe._id",
+          name: { $first: "$recipe.name" },
+          beschreibung: { $first: "$recipe.beschreibung" },
+          bild_reference: { $first: "$recipe.bild_reference" },
+          created: { $first: "$recipe.created" },
+          lastModified: { $first: "$recipe.lastModified" },
+          createdby: { $first: "$recipe.createdby" },
+          householdId: { $first: "$recipe.householdId" },
+          isPublic: { $first: "$recipe.isPublic" },
+          isFavorite: { $first: "$isFavorite" },
         },
       },
     ])
     .toArray();
 
-  if (recipe.length === 0) {
-    return null; // No recipe found
-  }
-
-  return recipe[0] as FrontEndRezept; // Return the first recipe found
+  return recipes as FrontEndRezept[];
 };
 
-export const changeVisibillityFromRecipe = async (
+export const getRecipe = async (
   recipeId: string,
-  isPublic: boolean
-) => {
-  console.log(recipeId, isPublic);
-  const result = rezeptCollection.updateOne(
-    { _id: new ObjectId(recipeId) },
-    { $set: { isPublic: isPublic } }
-  );
-
-  const lastUpdateResult = await changeLastUpdated(recipeId);
-
-  const res = await Promise.all([result, lastUpdateResult]);
-
-  if (!res[0]) {
-    throw new Error("Rezept nicht gefunden.");
-  }
-  return res[0].acknowledged;
-};
-
-export const getRecipesForHousehold = async (
-  householdId: string,
-  search: string | undefined,
-  sort: "alphabetical" | "mostliked" | "created"
-): Promise<FrontEndRezept[]> => {
-  const query: any = { householdId };
-
-  if (search) {
-    query.name = { $regex: new RegExp(escapedRegex(search), "i") }; // Case insensitive search
-  }
-
-  let sortOption: any;
-  switch (sort) {
-    case "alphabetical":
-      sortOption = { name: 1 };
-      break;
-    case "created":
-      sortOption = { created: -1 };
-      break;
-    default:
-      sortOption = {};
-  }
-
-  const recipes = rezeptCollection.aggregate([
-    { $match: query },
+  householdId?: string
+): Promise<FrontEndRezept | null> => {
+  const recipe = rezeptCollection.aggregate([
+    { $match: { _id: new ObjectId(recipeId.toString()) } },
     { $unwind: { path: "$zutaten" } },
     {
       $addFields: {
@@ -198,9 +158,7 @@ export const getRecipesForHousehold = async (
         _id: "$_id",
         name: { $first: "$name" },
         beschreibung: { $first: "$beschreibung" },
-        bild_reference: {
-          $first: "$bild_reference",
-        },
+        bild_reference: { $first: "$bild_reference" },
         zutaten: {
           $push: {
             $mergeObjects: [
@@ -210,18 +168,171 @@ export const getRecipesForHousehold = async (
           },
         },
         created: { $first: "$created" },
-        last_updated: { $first: "$last_updated" },
+        lastModified: { $first: "$lastModified" },
         createdby: { $first: "$createdby" },
         householdId: { $first: "$householdId" },
         isPublic: { $first: "$isPublic" },
       },
     },
-    {
-      $sort: sortOption,
-    },
   ]);
 
-  return (await recipes.toArray()) as FrontEndRezept[];
+  if (householdId) {
+    const householdRes = rezepteHouseholdCollection.findOne(
+      {
+        householdId,
+        recipeId,
+      },
+      { projection: { _id: 0, lastModified: 0 } }
+    );
+
+    const response = await Promise.all([householdRes, recipe.toArray()]);
+
+    if (response[1].length === 0) {
+      return null;
+    }
+
+    return { ...response[1][0], ...response[0] } as FrontEndRezept;
+  }
+
+  const array = await recipe.toArray();
+  if (array.length === 0) {
+    return null; // No recipe found
+  }
+
+  return array[0] as FrontEndRezept; // Return the first recipe found
+};
+
+export const changeVisibillityFromRecipe = async (
+  recipeId: string,
+  isPublic: boolean
+) => {
+  // Update recipe visibility
+  const result = rezeptCollection.updateOne(
+    { _id: new ObjectId(recipeId) },
+    { $set: { isPublic: isPublic, lastModified: new Date() } }
+  );
+
+  // If recipe becomes private, disable it in all households that have it
+  const householdUpdatePromise = rezepteHouseholdCollection.updateMany(
+    { recipeId: recipeId.toString() },
+    { $set: { isEnabled: isPublic, lastModified: new Date() } }
+  );
+
+  const res = await Promise.all([result, householdUpdatePromise]);
+
+  return res[0].acknowledged && res[1].acknowledged;
+};
+
+export const getRecipesForHousehold = async (
+  householdId: string,
+  search: string | undefined,
+  sort: "alphabetical" | "mostliked" | "created"
+): Promise<FrontEndRezept[]> => {
+  const matchStage: any = {
+    $match: {
+      $or: [
+        {
+          "recipe.householdId": householdId,
+        },
+        {
+          householdId,
+          isEnabled: true,
+        },
+      ],
+    },
+  };
+
+  let sortStage: any = {};
+  switch (sort) {
+    case "alphabetical":
+      sortStage = { "name": 1 };
+      break;
+    case "created":
+      sortStage = { "created": -1 };
+      break;
+    case "mostliked":
+      sortStage = { isFavorite: -1, "name": 1 };
+      break;
+    default:
+      sortStage = { "created": -1 };
+  }
+
+  if (search) {
+    matchStage.$match["name"] = {
+      $regex: new RegExp(escapedRegex(search), "i"),
+    };
+  }
+
+  const recipes = await rezepteHouseholdCollection
+    .aggregate([
+      {
+        $addFields: {
+          recipeId: {
+            $toObjectId: "$recipeId",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "rezepte",
+          localField: "recipeId",
+          foreignField: "_id",
+          as: "recipe",
+        },
+      },
+      { $unwind: "$recipe" },
+      matchStage,
+      { $unwind: { path: "$recipe.zutaten" } },
+      {
+        $addFields: {
+          "recipe.zutaten.lebensmittel_id": {
+            $toObjectId: "$recipe.zutaten.lebensmittel_id",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "lebensmittel",
+          localField: "recipe.zutaten.lebensmittel_id",
+          foreignField: "_id",
+          as: "zutat",
+        },
+      },
+      {
+        $group: {
+          _id: "$recipe._id",
+          name: { $first: "$recipe.name" },
+          beschreibung: {
+            $first: "$recipe.beschreibung",
+          },
+          bild_reference: {
+            $first: "$recipe.bild_reference",
+          },
+          zutaten: {
+            $push: {
+              $mergeObjects: [
+                { $first: "$zutat" },
+                { portion: "$recipe.zutaten.portion" },
+              ],
+            },
+          },
+          created: { $first: "$recipe.created" },
+          lastModified: {
+            $first: "$recipe.lastModified",
+          },
+          createdby: { $first: "$recipe.createdby" },
+          householdId: {
+            $first: "$recipe.householdId",
+          },
+          isPublic: { $first: "$recipe.isPublic" },
+          isFavorite: { $first: "$isFavorite" },
+        },
+      },
+      { $sort: sortStage },
+    ])
+    .toArray();
+
+  return recipes as FrontEndRezept[];
 };
 
 export const insertNewRecipe = async (
@@ -229,8 +340,6 @@ export const insertNewRecipe = async (
   household: string,
   userId: string
 ) => {
-  //Convert rezept: RezeptErstellType to Rezept type and insert it into the database, upload the bild/image to the database via uploadFile
-
   //base64 image to buffer
   let base64Image = rezept.bild;
   if (base64Image.startsWith("data:")) {
@@ -241,6 +350,7 @@ export const insertNewRecipe = async (
   const file = await uploadFile(buffer, rezept.name + ".jpg", "image/jpeg");
 
   const rezeptData: Rezept = {
+    _id: new ObjectId().toString(),
     name: rezept.name,
     beschreibung: rezept.beschreibung,
     bild_reference: file.id.toString(), // Store the file ID as a string
@@ -249,30 +359,232 @@ export const insertNewRecipe = async (
       lebensmittel_id: zutat.lebensmittel._id || "",
     })),
     created: new Date(),
-    last_updated: new Date(),
+    lastModified: new Date(),
     createdby: userId,
     householdId: household,
     isPublic: rezept.isPublic || false, // Default to false if not provided
   };
 
-  const result = await rezeptCollection.insertOne(rezeptData);
+  const result = rezeptCollection.insertOne(rezeptData);
+  const addH = addRecipeToHousehold(household, rezeptData._id!, userId);
 
-  if (result.acknowledged) {
-    return result.insertedId.toString(); // Return the inserted ID as a string
-  } else {
-    throw new Error("Failed to insert recipe");
+  const res = await Promise.all([result, addH]);
+
+  return res[0].acknowledged && res[1];
+};
+
+export const addRecipeToHousehold = async (
+  householdId: string,
+  recipeId: string,
+  userId: string
+): Promise<boolean> => {
+  // Check if the relationship already exists
+  const existing = await rezepteHouseholdCollection.findOne({
+    householdId,
+    recipeId,
+  });
+
+  if (existing) {
+    return true; // Recipe already added to household
+  }
+
+  const result = await rezepteHouseholdCollection.insertOne({
+    householdId,
+    recipeId,
+    addedAt: new Date(),
+    addedBy: userId,
+    isFavorite: false,
+    isEnabled: true,
+    lastModified: new Date(),
+  });
+
+  return result.acknowledged;
+};
+
+export const removeRecipeFromHousehold = async (
+  householdId: string,
+  recipeId: string
+): Promise<boolean> => {
+  const result = await rezepteHouseholdCollection.deleteOne({
+    householdId,
+    recipeId,
+  });
+
+  return result.deletedCount > 0;
+};
+
+export const getHouseholdRecipes = async (
+  householdId: string,
+  search?: string,
+  sort: "alphabetical" | "mostliked" | "created" = "created"
+): Promise<FrontEndRezept[]> => {
+  const matchStage: any = {
+    $match: {
+      $and: [
+        {
+          $or: [
+            { householdId }, // Recipes directly in the household
+            {
+              $and: [
+                { "recipe.isPublic": true },
+                { householdId: { $exists: true } },
+              ],
+            }, // Public recipes
+          ],
+        },
+        { isEnabled: true }, // Only show enabled recipes
+      ],
+    },
+  };
+
+  if (search) {
+    matchStage.$match["recipe.name"] = {
+      $regex: new RegExp(escapedRegex(search), "i"),
+    };
+  }
+
+  let sortStage: any = {};
+  switch (sort) {
+    case "alphabetical":
+      sortStage = { "recipe.name": 1 };
+      break;
+    case "created":
+      sortStage = { addedAt: -1 };
+      break;
+    default:
+      sortStage = { addedAt: -1 };
+  }
+
+  const recipes = await rezepteHouseholdCollection
+    .aggregate([
+      {
+        $lookup: {
+          from: "rezepte",
+          localField: "recipeId",
+          foreignField: "_id",
+          as: "recipe",
+        },
+      },
+      { $unwind: "$recipe" },
+      { $sort: sortStage },
+      matchStage,
+
+      // Expand recipe ingredients
+      { $unwind: { path: "$recipe.zutaten" } },
+      {
+        $lookup: {
+          from: "lebensmittel",
+          localField: "recipe.zutaten.lebensmittel_id",
+          foreignField: "_id",
+          as: "zutat",
+        },
+      },
+      {
+        $group: {
+          _id: "$recipe._id",
+          name: { $first: "$recipe.name" },
+          beschreibung: { $first: "$recipe.beschreibung" },
+          bild_reference: { $first: "$recipe.bild_reference" },
+          zutaten: {
+            $push: {
+              $mergeObjects: [
+                { $first: "$zutat" },
+                { portion: "$recipe.zutaten.portion" },
+              ],
+            },
+          },
+          created: { $first: "$recipe.created" },
+          lastModified: { $first: "$recipe.lastModified" },
+          createdby: { $first: "$recipe.createdby" },
+          householdId: { $first: "$recipe.householdId" },
+          isPublic: { $first: "$recipe.isPublic" },
+          isFavorite: { $first: "$isFavorite" },
+          addedAt: { $first: "$addedAt" },
+        },
+      },
+    ])
+    .toArray();
+
+  return recipes as FrontEndRezept[];
+};
+
+export const toggleFavoriteRecipe = async (
+  householdId: string,
+  recipeId: string
+): Promise<boolean> => {
+  const result = await rezepteHouseholdCollection.updateOne(
+    { householdId, recipeId },
+    [
+      {
+        $set: {
+          isFavorite: { $not: "$isFavorite" },
+        },
+      },
+    ]
+  );
+
+  return result.modifiedCount > 0;
+};
+
+export const setRecipeEnabled = async (
+  householdId: string,
+  recipeId: string,
+  isEnabled: boolean
+): Promise<boolean> => {
+  try {
+    const result = await rezepteHouseholdCollection.updateOne(
+      { householdId, recipeId },
+      {
+        $set: {
+          isEnabled,
+          lastModified: new Date(),
+        },
+      }
+    );
+
+    return result.modifiedCount > 0;
+  } catch (error) {
+    console.error("Error updating recipe availability:", error);
+    return false;
   }
 };
 
-const changeLastUpdated = async (recipeId: string) => {
-  const result = await rezeptCollection.updateOne(
-    { _id: new ObjectId(recipeId) },
-    { $set: { last_updated: new Date() } }
-  );
+export const deleteRecipe = async (
+  recipeId: string,
+  householdId: string // Zur Überprüfung der Berechtigung
+): Promise<boolean> => {
+  // Prüfen ob das Rezept zum Haushalt gehört
+  const recipe = await rezeptCollection.findOne({
+    _id: recipeId.toString(),
+    householdId,
+  });
 
-  if (result.modifiedCount === 0) {
-    throw new Error("Failed to update last updated date");
+  if (!recipe) {
+    console.warn("Das Rezept zum löschen wurde nicht gefunden! - " + recipeId);
+    return false;
   }
+
+  // Rezept aus der Hauptsammlung löschen
+  const deleteResult = await rezeptCollection.deleteOne({
+    _id: recipeId.toString(),
+  });
+
+  if (!deleteResult.acknowledged) {
+    console.warn("Fehler beim Löschen des Rezepts.");
+    return false;
+  }
+
+  // Alle Beziehungen zu diesem Rezept in anderen Haushalten löschen
+  const del = rezepteHouseholdCollection.deleteMany({
+    recipeId: recipeId.toString(),
+  });
+
+  const imgDel = deleteFile(new ObjectId(recipe.bild_reference));
+
+  //ImgDel does not return anything
+  const res = await Promise.all([del, imgDel]);
+
+  return res[0].acknowledged;
 };
 
 const escapedRegex = (search: string) => {

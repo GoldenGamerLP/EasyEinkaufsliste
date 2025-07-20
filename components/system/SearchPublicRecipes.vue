@@ -1,5 +1,5 @@
 <template>
-    <Drawer>
+    <Drawer v-model:open="isOpen">
         <DrawerTrigger as-child>
             <Button class="sm:flex-none flex-1" variant="outline">
                 Öffentliche Rezepte Suchen
@@ -16,8 +16,8 @@
                     <ComboboxAnchor class="w-full">
                         <div class="relative items-center bg-input/40 w-full rounded-lg ">
                             <div class="flex h-9 items-center gap-2 px-2">
-                                <component :is="isLoading ? Loader2 : CarrotIcon"
-                                    :class="cn('size-4 shrink-0 opacity-50', isLoading ? 'animate-spin' : '')" />
+                                <component :is="isLoadingSearch ? Loader2 : CarrotIcon"
+                                    :class="cn('size-4 shrink-0 opacity-50', isLoadingSearch ? 'animate-spin' : '')" />
                                 <ComboboxInputReka v-model="search" :display-value="val => val?.name ?? ''"
                                     placeholder="Suche nach Rezepten..."
                                     class="placeholder:text-muted-foreground flex h-10 py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
@@ -52,7 +52,7 @@
                         <ComboboxSeparator />
                     </ComboboxList>
                 </Combobox>
-                <Button class="w-full">
+                <Button class="w-full" @click="submitRecipe">
                     Hinzufügen!
                 </Button>
             </div>
@@ -75,22 +75,27 @@ import { Loader2, CarrotIcon, Check, FrownIcon } from 'lucide-vue-next';
 import { refDebounced } from '@vueuse/core';
 import { type FrontEndRezept } from '~/types/HouseHold';
 import { useHousehold } from '~/composable/household';
+import { toast } from 'vue-sonner';
 
+const isOpen = ref(false);
 const selectedRecipe = ref<FrontEndRezept>();
 const search = shallowRef();
 const searchThrotthled = refDebounced(search);
 const data = ref<FrontEndRezept[]>();
-const isLoading = ref(false);
+const isLoadingSearch = ref(false);
+const isLoadingAdd = ref(false);
 const household = useHousehold();
+
+const emit = defineEmits(["update:addrecipe"]);
 
 watch(searchThrotthled, async (newValue) => {
     if (newValue.length < 2) {
         data.value = [];
-        isLoading.value = false;
+        isLoadingSearch.value = false;
         return;
     }
 
-    isLoading.value = true;
+    isLoadingSearch.value = true;
 
     try {
         const response = await $fetch<FrontEndRezept[]>('/api/v1/household/recipes/findPublicRecipes', {
@@ -106,6 +111,30 @@ watch(searchThrotthled, async (newValue) => {
         data.value = [];
     }
 
-    isLoading.value = false;
+    isLoadingSearch.value = false;
 });
+
+const submitRecipe = async () => {
+    if (isLoadingAdd.value || !selectedRecipe.value) return;
+
+    try {
+        const res = await $fetch("/api/v1/household/recipes/addPublicRecipeToHousehold", {
+            method: "POST",
+            body: {
+                recipeId: selectedRecipe.value._id,
+                householdId: household.value?._id,
+            }
+        });
+
+        if (res) {
+            isOpen.value = false;
+            emit("update:addrecipe", selectedRecipe.value);
+            toast.info("Added!");
+        } else toast.error("Not added!");
+    } catch (error) {
+        toast.error("Error while adding!");
+    }
+
+    isLoadingAdd.value = false;
+}
 </script>

@@ -43,6 +43,7 @@ const RezeptErstellSchema = z.object({
 type Lebensmittel = z.infer<typeof LebensmittelSchema>;
 
 interface Rezept {
+  _id?: string;
   name: string;
   beschreibung: string | undefined;
   bild_reference: string;
@@ -51,16 +52,22 @@ interface Rezept {
     lebensmittel_id: string;
   }[];
   created: Date | string;
-  last_updated: Date | string;
+  lastModified: Date | string;
   createdby: string;
   householdId: string;
   isPublic: boolean;
+  isFavorite: boolean;
 }
 
-interface SharedRezept {
-  recipeId: string;
+interface HouseholdRezept {
+  _id?: string; // MongoDB ObjectId
   householdId: string;
-  sharedAt: Date | string; // Date when the recipe was shared
+  recipeId: string;
+  addedAt: Date | string;
+  addedBy: string;
+  isFavorite?: boolean;
+  isEnabled: boolean; // true wenn das Rezept verfügbar ist, false wenn nicht (z.B. wenn Original nicht mehr public)
+  lastModified: Date | string;
 }
 
 interface FrontEndRezept {
@@ -72,10 +79,11 @@ interface FrontEndRezept {
     portion: number;
   }[];
   created: Date | string;
-  last_updated: Date | string;
+  lastModified: Date | string;
   createdby: string;
   householdId: string;
   isPublic: boolean | undefined;
+  isFavorite: boolean;
 }
 
 type RezeptErstellType = z.infer<typeof RezeptErstellSchema>;
@@ -100,5 +108,5 @@ export {
   type RezeptErstellType,
   type HouseHold,
   type FrontEndRezept,
-  type SharedRezept,
+  type HouseholdRezept,
 };

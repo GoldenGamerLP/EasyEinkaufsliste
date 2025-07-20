@@ -1,5 +1,5 @@
 <template>
-    <div v-if="data" class="max-w-3xl mx-auto mt-8">
+    <div v-if="status === 'success' && data" class="max-w-3xl mx-auto mt-8">
         <Card>
             <CardHeader class="h-52 relative flex flex-col justify-between">
                 <img :src="`/api/v1/cms/${data.bild_reference}`" alt="Rezept Bild"
@@ -12,7 +12,7 @@
                             <ChevronsLeft /> Zurück
                         </Button>
                     </NuxtLink>
-                    <DropdownMenu>
+                    <DropdownMenu v-if="recipeBelongsToHousehold">
                         <DropdownMenuTrigger as-child>
                             <Button variant="outline">
                                 <MoreVertical />
@@ -21,30 +21,29 @@
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <SystemRecipeVisibillityChange :recipe="data" />
-
-                            <DropdownMenuItem>
-                                Bearbeiten
-                            </DropdownMenuItem>
                             <DropdownMenuItem>Löschen</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
 
                 </div>
-                <div class="z-10 w-full rounded-lg">
-                    <CardTitle class="text-2xl font-bold mb-2">{{ data.name }}</CardTitle>
-                    <div class="flex flex-wrap gap-2">
-                        <Badge>
-                            <NuxtTime relative :datetime="data.created" style="long" numeric="auto" />
-                        </Badge>
-                        <Badge>{{ data.zutaten?.length || 0 }} Zutat(en)</Badge>
-                        <Badge>
-                            Ungefähr {{ geldFormat.format(calculateCost(data)) }} pro Portion
-                        </Badge>
-                        <Badge v-if="data.isPublic">
-                            <DoorOpen />
-                            Öffentlich
-                        </Badge>
+                <div class="flex z-10 w-full items-center justify-between">
+                    <div class="grid">
+                        <h1 class="text-2xl font-bold mb-2">{{ data.name }}</h1>
+                        <div class="flex flex-wrap gap-2">
+                            <Badge>
+                                <NuxtTime relative :datetime="data.created" style="long" numeric="auto" />
+                            </Badge>
+                            <Badge>{{ data.zutaten?.length || 0 }} Zutat(en)</Badge>
+                            <Badge>
+                                Ungefähr {{ geldFormat.format(calculateCost(data)) }} pro Portion
+                            </Badge>
+                            <Badge v-if="data.isPublic">
+                                <DoorOpen />
+                                Öffentlich
+                            </Badge>
+                        </div>
                     </div>
+                    <SystemMarkRecipeAsFavorit :recipe="data" type="icon" />
                 </div>
             </CardHeader>
             <CardContent class="space-y-8">
@@ -76,28 +75,36 @@
             </CardContent>
         </Card>
     </div>
-    <div v-else class="flex justify-center items-center h-96">
+    <div v-else-if="status === 'pending'" class="flex justify-center items-center h-96">
         <Loader2Icon class="animate-spin mr-2" />
         <span>Laden...</span>
+    </div>
+    <div v-else>
+        {{ status }} - {{ error }}
     </div>
 </template>
 
 <script setup lang="ts">
 import { Loader2Icon, ChevronsLeft, MoreVertical, DoorOpen } from "lucide-vue-next";
-import { useRouter } from 'vue-router';
+import { useHousehold } from "~/composable/household";
 import { useMembers } from "~/composable/members";
 import type { FrontEndRezept } from "~/types/HouseHold";
 
 const portions = ref(1);
 const recipeId = useRoute().params.recipeId;
-const router = useRouter();
 const members = useMembers();
+const household = useHousehold();
 
-const { data, status } = await useFetch<FrontEndRezept>("/api/v1/household/recipes/get", {
+const { data, status, error } = await useFetch<FrontEndRezept>("/api/v1/household/recipes/get", {
     query: {
         recipeId,
+        householdId: household.value?._id,
     },
     deep: true,
+});
+
+const recipeBelongsToHousehold = computed(() => {
+    return data.value?.householdId === household.value?._id;
 });
 
 const geldFormat = new Intl.NumberFormat("de-DE", {
@@ -112,8 +119,4 @@ const calculateCost = (rezept: any): number => {
         return total + ((zutat.portion / zutat.verpackungsmenge) * zutat.preis);
     }, 0);
 };
-
-function goBack() {
-    router.back();
-}
 </script>
