@@ -2,6 +2,7 @@
     <ClientOnly>
         <Button variant="ghost" size="icon" @click="state ? toWhite() : toDark()">
             <component :is="state ? Moon : Sun" class="w-5 h-5" />
+            <span class="sr-only">Hellen oder Dunklen modus aktivieren</span>
         </Button>
     </ClientOnly>
 </template>

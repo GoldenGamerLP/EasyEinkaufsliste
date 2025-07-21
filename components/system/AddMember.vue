@@ -79,29 +79,33 @@ import { useMembers } from '~/composable/members';
 import { cn } from '~/lib/utils';
 import type { FrontEndUser } from '~/types/User';
 import { toast } from 'vue-sonner';
-import { useHousehold } from '~/composable/household';
-import { UserRoles, type UserRole } from '~/types/HouseHold';
-import { hasPermission, useRole } from '~/composable/useRole';
-import { usePermission } from '@vueuse/core';
+import { hasPermission } from '~/composable/useRole';
+import { refDebounced } from '@vueuse/core';
 const user = useUser();
 const members = useMembers();
 
-const isSelf = (member: FrontEndUser) => {
-    return member._id === user.value?._id;
-};
-
 const person = ref<FrontEndUser | null>(null);
 const search = ref('');
+const searchThrottled = refDebounced(search, 450);
 const addUserLoading = ref(false);
-const household = useHousehold();
+const data = ref<FrontEndUser[]>([]);
 
-const { data, status, refresh } = useLazyFetch('/api/v1/household/members/search', {
-    method: "get",
-    query: {
-        userMail: search,
-    },
-    watch: [search],
-});
+watch(searchThrottled, async () => {
+    try {
+        const res = await $fetch("/api/v1/household/members/search", {
+            method: "GET",
+            query: {
+                userMail: search.value,
+            }
+        });
+
+        if (res) {
+            data.value = res;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 const computedResult = computed(() => {
     const result = [];

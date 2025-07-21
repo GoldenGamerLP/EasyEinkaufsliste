@@ -147,7 +147,7 @@ export async function createSessionCookie(sessionId: string) {
     value: sessionId,
     attributes: {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: "lax",
       expires: new Date(Date.now() + expireAfterSeconds * 1000),
     },

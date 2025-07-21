@@ -1,9 +1,11 @@
 <template>
-    <Button variant="ghost" :size="type" :disabled="isLoading && hasPermission('READ')" @click.prevent.stop="toggleFavorit">
+    <Button variant="ghost" :size="type" :disabled="isLoading && hasPermission('READ')"
+        @click.prevent.stop="toggleFavorit">
         <component :is="recipe.isFavorite ? Sparkles : Star" :class="recipe.isFavorite ? 'text-yellow-400' : ''" />
-        <template v-if="type === 'default'">
+        <span :class="type === 'icon' ? 'sr-only' : ''">
             {{ recipe.isFavorite ? 'Nicht mehr als Favorit makieren' : 'Als Favorit makieren' }}
-        </template>
+
+        </span>
     </Button>
 </template>
 
@@ -34,7 +36,7 @@ const toggleFavorit = async () => {
             }
         });
 
-        if(res) {
+        if (res) {
             toast.info("Als Favorit markiert!");
             recipe.isFavorite = !recipe.isFavorite;
         }

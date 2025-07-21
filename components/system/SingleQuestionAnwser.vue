@@ -18,7 +18,7 @@
                         </span>
                         <Progress :model-value="calculatedPercentage(question._id!, answer.id)" class="w-64" />
                     </div>
-                    <img v-if="answer.bild_refrence" :src="`/api/v1/cms/${answer.bild_refrence}`"
+                    <img v-if="answer.bild_refrence" :src="`/api/v1/cms/${answer.bild_refrence}`" alt="Rezeptbild" loading="lazy"
                         class="absolute top-0 right-0 h-full w-full max-w-xs object-cover rounded-r-lg mask-r-from-900% mask-l-to-90%" />
                 </div>
             </label>

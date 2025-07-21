@@ -62,6 +62,10 @@ import { Cable, Loader2 } from "lucide-vue-next";
 import { loginSchema, registerSchema } from "~/types/User";
 import { toast } from "vue-sonner";
 
+useHead({
+  title: "EasyHouseholds"
+})
+
 const loading = ref(false);
 
 onMounted(() => {
@@ -119,6 +123,6 @@ const onRegister = async (values: Record<string, any>) => {
 
 const forward = async () => {
   const forwardedUrl = (useRoute().query.forward as string) || "/households";
-  await useRouter().push("/authenticated" + forwardedUrl);
+  await navigateTo("/authenticated" + forwardedUrl);
 };
 </script>

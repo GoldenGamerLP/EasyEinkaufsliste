@@ -1,3 +1,4 @@
+import type { ObjectId } from "mongodb";
 import * as z from "zod";
 
 export const UserRoles = ['READ', 'READ_WRITE', 'CREATOR'] as const;
@@ -43,7 +44,7 @@ const RezeptErstellSchema = z.object({
 type Lebensmittel = z.infer<typeof LebensmittelSchema>;
 
 interface Rezept {
-  _id?: string;
+  _id?: ObjectId;
   name: string;
   beschreibung: string | undefined;
   bild_reference: string;
@@ -56,7 +57,6 @@ interface Rezept {
   createdby: string;
   householdId: string;
   isPublic: boolean;
-  isFavorite: boolean;
 }
 
 interface HouseholdRezept {

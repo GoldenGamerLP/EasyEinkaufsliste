@@ -45,9 +45,12 @@
 
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight, TriangleAlert } from 'lucide-vue-next';
-import { useUser } from '~/composable/auth';
 import { useHousehold } from '~/composable/household';
 
-const currentHousehold = useRoute().params.household;
 const household = useHousehold();
+
+useHead({
+    titleTemplate: "Haushalt - %s",
+    title: () => household.value?.name || "???",
+})
 </script>

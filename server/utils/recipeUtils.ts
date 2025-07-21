@@ -347,10 +347,10 @@ export const insertNewRecipe = async (
   }
   const buffer = Buffer.from(base64Image, "base64");
 
-  const file = await uploadFile(buffer, rezept.name + ".jpg", "image/jpeg");
+  const file = await uploadFile(buffer, rezept.name + ".webp", "image/webp");
 
   const rezeptData: Rezept = {
-    _id: new ObjectId().toString(),
+    _id: new ObjectId(),
     name: rezept.name,
     beschreibung: rezept.beschreibung,
     bild_reference: file.id.toString(), // Store the file ID as a string
@@ -366,7 +366,7 @@ export const insertNewRecipe = async (
   };
 
   const result = rezeptCollection.insertOne(rezeptData);
-  const addH = addRecipeToHousehold(household, rezeptData._id!, userId);
+  const addH = addRecipeToHousehold(household, rezeptData._id?.toString()!, userId);
 
   const res = await Promise.all([result, addH]);
 

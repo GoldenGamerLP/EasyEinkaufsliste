@@ -83,6 +83,11 @@ const validation = z.object({
     members: z.array(z.string()).default([]),
 });
 
+useHead({
+    titleTemplate: "EasyHouseholds - %s",
+    title: () => data.value?.length,
+})
+
 const onSubmit = async (data: Record<string, any>) => {
     isLoading.value = true;
     try {

@@ -71,7 +71,7 @@ import { refDebounced } from '@vueuse/core';
 
 const selectedLebensmittel = ref<Lebensmittel>();
 const searchName = shallowRef("");
-const searchThrottled = refDebounced(searchName, 750);
+const searchThrottled = refDebounced(searchName, 450);
 const numberSelection = ref(0);
 const emits = defineEmits(["submit", "delete"]);
 const isLoading = ref(false);

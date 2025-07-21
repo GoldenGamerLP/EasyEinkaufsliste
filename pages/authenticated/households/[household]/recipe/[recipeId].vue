@@ -107,6 +107,11 @@ const recipeBelongsToHousehold = computed(() => {
     return data.value?.householdId === household.value?._id;
 });
 
+useHead({
+    titleTemplate: "Rezept - %s",
+    title: () => data.value?.name || "???",
+})
+
 const geldFormat = new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",

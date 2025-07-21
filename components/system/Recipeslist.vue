@@ -71,7 +71,7 @@
             </Drawer>
         </CardHeader>
         <CardContent>
-            <ol class="grid grid-cols-1 md:grid-cols-2 gap-2" v-if="status === 'success'">
+            <ol class="grid grid-cols-1 md:grid-cols-2 gap-2" v-if="status === 'success'" v-auto-animate>
                 <li v-for="recipe in data" :key="recipe._id">
                     <NuxtLink
                         :to="{ name: 'authenticated-households-household-recipe-recipeId', params: { household: useRoute().params.household, recipeId: recipe._id } }"
@@ -97,7 +97,7 @@
                             </Badge>
                         </div>
 
-                        <img :src="`/api/v1/cms/${recipe.bild_reference}`" alt="Rezeptbild"
+                        <img :src="`/api/v1/cms/${recipe.bild_reference}`" alt="Rezeptbild" loading="lazy"
                             class="absolute rounded-lg top-0 right-0 left-0 h-full w-full object-cover rounded-r-lg mask-t-from-100% mask-b-to-80% group-hover:scale-105 transition-transform" />
                     </NuxtLink>
                 </li>
