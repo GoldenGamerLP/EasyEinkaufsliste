@@ -1,9 +1,8 @@
-import tailwindcss from "@tailwindcss/vite";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   css: ["~/assets/css/tailwind.css"],
+  builder: "vite",
   devtools: {
     enabled: true,
 
@@ -11,16 +10,7 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  modules: [
-    "@nuxt/fonts",
-    "@nuxtjs/tailwindcss",
-    "shadcn-nuxt",
-    "@formkit/auto-animate/nuxt",
-    "@nuxtjs/critters",
-  ],
-  vite: {
-    plugins: [tailwindcss()],
-  },
+  modules: ["@nuxt/fonts", "@nuxtjs/tailwindcss", "shadcn-nuxt"],
   shadcn: {
     /**
      * Prefix for all the imported component
@@ -37,15 +27,7 @@ export default defineNuxtConfig({
       preload: true,
     },
   },
-  postcss: {
-    plugins: {
-      cssnano: {
-        preset: "advanced",
-      },
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
+
   app: {
     head: {
       htmlAttrs: {
@@ -53,5 +35,9 @@ export default defineNuxtConfig({
       },
       title: "EasyHouseholds",
     },
+    keepalive: true,
+  },
+  experimental: {
+    lazyHydration: true,
   },
 });

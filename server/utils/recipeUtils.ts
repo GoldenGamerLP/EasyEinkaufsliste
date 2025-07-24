@@ -6,6 +6,7 @@ import {
 } from "~/types/HouseHold";
 import database from "./DBUtils";
 import { ObjectId } from "mongodb";
+import { QUESTION_IDENTIFIER } from "./QuestionSurveysUtils";
 
 const rezeptCollection = database.collection<Rezept>("rezepte");
 const rezepteHouseholdCollection =
@@ -245,16 +246,16 @@ export const getRecipesForHousehold = async (
   let sortStage: any = {};
   switch (sort) {
     case "alphabetical":
-      sortStage = { "name": 1 };
+      sortStage = { name: 1 };
       break;
     case "created":
-      sortStage = { "created": -1 };
+      sortStage = { created: -1 };
       break;
     case "mostliked":
-      sortStage = { isFavorite: -1, "name": 1 };
+      sortStage = { isFavorite: -1, name: 1 };
       break;
     default:
-      sortStage = { "created": -1 };
+      sortStage = { created: -1 };
   }
 
   if (search) {
@@ -366,11 +367,25 @@ export const insertNewRecipe = async (
   };
 
   const result = rezeptCollection.insertOne(rezeptData);
-  const addH = addRecipeToHousehold(household, rezeptData._id?.toString()!, userId);
+  const addH = addRecipeToHousehold(
+    household,
+    rezeptData._id?.toString()!,
+    userId
+  );
 
-  const res = await Promise.all([result, addH]);
+  //An better check?
+  const checkQuestion = createNewQuestion(QUESTION_IDENTIFIER, household);
 
-  return res[0].acknowledged && res[1];
+  const res = await Promise.all([result, addH, checkQuestion]);
+
+  if (!(res[0].acknowledged && res[1] && checkQuestion)) {
+    throw createError({
+      status: 500,
+      message: "An error appeared while adding recipe, try again.",
+    });
+  }
+
+  return rezeptData;
 };
 
 export const addRecipeToHousehold = async (
@@ -549,14 +564,10 @@ export const setRecipeEnabled = async (
   }
 };
 
-export const deleteRecipe = async (
-  recipeId: string,
-  householdId: string // Zur Überprüfung der Berechtigung
-): Promise<boolean> => {
+export const deleteRecipe = async (recipeId: string): Promise<boolean> => {
   // Prüfen ob das Rezept zum Haushalt gehört
   const recipe = await rezeptCollection.findOne({
-    _id: recipeId.toString(),
-    householdId,
+    _id: new ObjectId(recipeId),
   });
 
   if (!recipe) {
@@ -566,7 +577,7 @@ export const deleteRecipe = async (
 
   // Rezept aus der Hauptsammlung löschen
   const deleteResult = await rezeptCollection.deleteOne({
-    _id: recipeId.toString(),
+    _id: new ObjectId(recipeId),
   });
 
   if (!deleteResult.acknowledged) {
@@ -576,7 +587,7 @@ export const deleteRecipe = async (
 
   // Alle Beziehungen zu diesem Rezept in anderen Haushalten löschen
   const del = rezepteHouseholdCollection.deleteMany({
-    recipeId: recipeId.toString(),
+    recipeId: recipeId,
   });
 
   const imgDel = deleteFile(new ObjectId(recipe.bild_reference));

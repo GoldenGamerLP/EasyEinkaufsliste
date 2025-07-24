@@ -10,7 +10,5 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  handleCacheHeaders(event, { maxAge: 1 * 60 * 60, cacheControls: ['public'] });
-  
   return await getHouseholds(user._id);
 });

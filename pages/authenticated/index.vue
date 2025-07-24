@@ -1,11 +1,14 @@
 <template>
-  <div class="w-full mx-auto flex flex-col justify-center items-center h-[calc(100vh-10rem)]">
+  <div
+    class="w-full mx-auto flex flex-col justify-center items-center h-[calc(100vh-10rem)]"
+  >
     <span class="mb-4 flex items-center gap-2">
       <Cable class="size-14 text-primary" />
       <div class="grid">
         <h1 class="text-3xl font-bold">Easy-Household</h1>
         <p class="text-lg text-muted-foreground leading-none">
           Hier kannst du dich registrieren oder einloggen.
+          {{ user?.name || "Nichts" }}
         </p>
       </div>
     </span>
@@ -23,8 +26,12 @@
             <CardDescription>Bitte registriere dich.</CardDescription>
           </CardHeader>
           <CardContent>
-            <AutoForm :schema="registerSchema" :field-config="{ profilePicture: { component: 'profile' } }"
-              @submit="onRegister" class="space-y-8">
+            <AutoForm
+              :schema="registerSchema"
+              :field-config="{ profilePicture: { component: 'profile' } }"
+              @submit="onRegister"
+              class="space-y-8"
+            >
               <Button class="w-full mt-4" :disabled="loading" type="submit">
                 <template v-if="loading">
                   <Loader2 class="size-4 animate-spin" /> Loading...
@@ -61,19 +68,24 @@
 import { Cable, Loader2 } from "lucide-vue-next";
 import { loginSchema, registerSchema } from "~/types/User";
 import { toast } from "vue-sonner";
+import { useUser } from "~/composable/auth";
+
+const user = useUser();
 
 useHead({
-  title: "EasyHouseholds"
-})
+  title: "EasyHouseholds",
+});
+
+preloadRouteComponents("/authenticated/households");
 
 const loading = ref(false);
 
 onMounted(() => {
-  const forwardedUrl = (useRoute().query.forward as string);
+  const forwardedUrl = useRoute().query.forward as string;
   if (forwardedUrl) {
-    toast("Error while forwarding.", {description: 'You have to be logged-in!'});
+    toast.error("Du musst angemeldet sein um diesen Inhalt zu sehen!");
   }
-})
+});
 
 const onLogin = async (values: Record<string, any>) => {
   try {
@@ -84,15 +96,18 @@ const onLogin = async (values: Record<string, any>) => {
     });
 
     if (response.success) {
-      toast("Welcome back!", {description: "You are beeing forwarded."});
-
       await forward();
+      toast.info("Welcome back!");
     } else {
-      toast("Error while logging in.", {description: 'Wrong EMail or Password.'});
+      toast("Error while logging in.", {
+        description: "Wrong EMail or Password.",
+      });
     }
   } catch (error) {
     console.error(error);
-    toast("Error while logging in.", {description: error.statusText || 'An unkown error occoured.'});
+    toast("Error while logging in.", {
+      description: error.statusText || "An unkown error occoured.",
+    });
   } finally {
     loading.value = false;
   }
@@ -107,22 +122,26 @@ const onRegister = async (values: Record<string, any>) => {
     });
 
     if (response.success) {
-      toast("Registered!", {description: 'You are not registered. You are now forwarded.'});
+      toast.info("Hello there!");
 
       await forward();
     } else {
-      toast("Error while registering.", {description: 'Did you fill everything out?'});
+      toast("Error while registering.", {
+        description: "Did you fill everything out?",
+      });
     }
   } catch (error) {
     console.error(error);
-    toast("Error while registering.", {description: error.statusText || 'An unkown error occoured.'})
+    toast("Error while registering.", {
+      description: error.statusText || "An unkown error occoured.",
+    });
   } finally {
     loading.value = false;
   }
 };
 
 const forward = async () => {
-  const forwardedUrl = (useRoute().query.forward as string) || "/households";
-  await navigateTo("/authenticated" + forwardedUrl);
+  const forwardedUrl = (useRoute().query.forward as string) || "households";
+  useRouter().push("/authenticated" + forwardedUrl);
 };
 </script>

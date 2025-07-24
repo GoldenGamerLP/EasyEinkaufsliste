@@ -2,6 +2,8 @@ import { AnswerData, Question, QuestionSkeleton } from "~/types/QandA";
 import { addQuestionGenerator } from "./QuestionUtils";
 import { getRandomRecipesFromHousehold } from "./recipeUtils";
 
+export const QUESTION_IDENTIFIER = "recipe-surveys";
+
 const handleAnsweredSurvey = (question: Question, answer: AnswerData) => {
   // Handle the logic when a survey is answered
   console.log("Survey answered", {
@@ -38,12 +40,10 @@ const createQuestionFromHousehold = async (householdId: string) => {
 };
 
 export const init = () => {
-  console.log("Added handlers");
-
   addQuestionGenerator(
-  "recipe-surveys",
-  (householdId: string) => createQuestionFromHousehold(householdId),
-  (question: Question, answer: AnswerData) =>
-    handleAnsweredSurvey(question, answer)
-);
+    QUESTION_IDENTIFIER,
+    (householdId: string) => createQuestionFromHousehold(householdId),
+    (question: Question, answer: AnswerData) =>
+      handleAnsweredSurvey(question, answer)
+  );
 };

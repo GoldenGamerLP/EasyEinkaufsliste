@@ -36,6 +36,7 @@ const addQuestionGenerator = (
   }
 
   questionGeneratorsList[identifier] = { questionCallback, onQuestionEnd };
+  console.log(`Added Question Generator - ${identifier}`);
 };
 
 const createNewQuestion = async (qGenerator: string, householdId: string) => {
@@ -74,12 +75,13 @@ const createNewQuestion = async (qGenerator: string, householdId: string) => {
       },
     ]);
 
-    const ans = answerDatabase.updateOne({ _id: questionBefore._id }, 
+    const ans = answerDatabase.updateOne(
+      { _id: questionBefore._id },
       {
         $set: {
           answer: [],
-        }
-      },
+        },
+      }
     );
 
     const promises = await Promise.all([answerBefore, res, ans]);

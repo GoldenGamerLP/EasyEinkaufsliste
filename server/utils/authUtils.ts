@@ -7,21 +7,6 @@ export const expireAfterSeconds = 60 * 60 * 24 * 7; // 1 week
 const users = database.collection("users") as Collection<User>;
 const sessions = database.collection("sessions") as Collection<Session>;
 
-database
-  .listCollections()
-  .toArray()
-  .then((collections: CollectionInfo[]) => {
-    if (
-      collections.findIndex((collection) => collection.name === "sessions") !==
-      -1
-    )
-      return;
-
-    database.createCollection("sessions", {
-      timeseries: { timeField: "expires_at", metaField: "user_id" },
-    });
-  });
-
 export function userNameToId(userMail: string) {
   return users.findOne({
     mail: userMail,
@@ -76,7 +61,7 @@ export async function updateUserImage(userId: string, base64Image: string) {
   const buffer = Buffer.from(base64Image, "base64");
   const fileName = `profilePicture_${userId}.jpg`;
 
-  if(user.bild_reference) {
+  if (user.bild_reference) {
     await deleteFile(new ObjectId(user.bild_reference));
   }
 
@@ -147,7 +132,7 @@ export async function createSessionCookie(sessionId: string) {
     value: sessionId,
     attributes: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       expires: new Date(Date.now() + expireAfterSeconds * 1000),
     },

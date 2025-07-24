@@ -1,6 +1,6 @@
-import { findSession, getUserById } from '~/server/utils/authUtils';
-import { sessionCookieName } from '~/server/utils/authUtils';
-import type { FrontEndUser, Session, User } from '~/types/User';
+import { findSession, getUserById } from "~/server/utils/authUtils";
+import { sessionCookieName } from "~/server/utils/authUtils";
+import type { FrontEndUser, Session, User } from "~/types/User";
 
 export default defineEventHandler(async (event) => {
   // Origin verification
@@ -42,8 +42,8 @@ export default defineEventHandler(async (event) => {
 });
 
 declare module "h3" {
-	interface H3EventContext {
-		user: FrontEndUser | null;
-		session: Session | null;
-	}
+  interface H3EventContext {
+    user: FrontEndUser | null;
+    session: Session | null;
+  }
 }

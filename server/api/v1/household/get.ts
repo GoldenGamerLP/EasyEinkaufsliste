@@ -3,12 +3,12 @@ import * as z from "zod";
 
 export default defineEventHandler(async (event) => {
   const user = event.context.user;
+  console.log("User c2:" + user?.mail);
 
   if (!user) {
     throw createError({
       statusCode: 401,
       statusMessage: "Unauthorized",
-      message: "User not authenticated",
     });
   }
 
