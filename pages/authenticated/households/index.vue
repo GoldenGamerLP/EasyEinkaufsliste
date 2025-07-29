@@ -7,9 +7,9 @@
       </div>
       <SystemLogoutButton class="ml-auto" />
     </header>
-    <ol class="px-1 flex flex-row gap-2 flex-wrap">
+    <ol class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-2 px-1 sm:px-0">
       <li
-        class="rounded-lg border max-w-sm relative group overflow-hidden w-full"
+        class="rounded-lg border relative group overflow-hidden w-full"
         v-for="household in data"
       >
         <NuxtLink

@@ -1,11 +1,17 @@
 <template>
-    <div class="flex flex-col items-center justify-center h-screen">
-        <h1 class="text-3xl font-semibold">Willkommen auf EasyHousehold!</h1>
-        <p class="text-lg text-muted-foreground mb-4">Bitte melde dich an, um fortzufahren.</p>
-        <Button>
-            <NuxtLink to="/authenticated/households" class="w-full">
-                Weiter gehts!
-            </NuxtLink>
-        </Button>
+    <div class="h-screen flex flex-col items-center justify-center">
+        <div class="max-w-sm w-full flex-col">
+            <h1 class="text-3xl font-bold text-center mb-4">Willkommen bei EasyHouseHolds</h1>
+            <p class="text-muted-foreground text-center mb-4">Anmelden oder Registrieren um beizutreten!</p>
+            <Button class="w-full" size="lg">
+                <NuxtLink to="/authenticated/households">
+                    Weiter gehts!
+                </NuxtLink>
+            </Button>
+        </div>
     </div>
 </template>
+
+<script lang="ts" setup>
+preloadRouteComponents("/authenticated");
+</script>
