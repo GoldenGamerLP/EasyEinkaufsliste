@@ -15,9 +15,7 @@
       </DrawerHeader>
       <div class="p-4 pb-0 max-h-1/2 overflow-y-auto scrollbar">
         <AutoForm
-          :schema="
-            RezeptErstellSchema.omit({ householdId: true, isPublic: true })
-          "
+          :schema="RezeptErstellSchema.omit({ householdId: true })"
           :field-config="{
             zutaten: { component: 'lebensmittelArray' },
             bild: { component: 'profile' },
@@ -47,6 +45,7 @@
 import { toast } from "vue-sonner";
 import { hasPermission } from "~/composable/useRole";
 import { Loader2Icon, Send, Plus } from "lucide-vue-next";
+import { RezeptErstellSchema } from "~/types/HouseHold";
 
 const emit = defineEmits(["update:recipes"]);
 

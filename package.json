@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxt/fonts": "^0.11.4",
     "@nuxt/rspack-builder": "^4.0.1",
+    "@nuxtjs/critters": "^0.9.0",
     "@nuxtjs/tailwindcss": "^7.0.0-beta.0",
     "@tailwindcss/vite": "^4.1.8",
     "@tanstack/vue-table": "^8.21.3",

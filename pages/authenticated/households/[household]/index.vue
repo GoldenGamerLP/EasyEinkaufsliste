@@ -1,52 +1,90 @@
 <template>
   <template v-if="household">
-    <header class="grid w-full border-b border-muted p-2">
-      <div class="flex justify-between items-center">
-        <h1 class="text-3xl flex items-center">
-          <span class="text-muted-foreground">Haushalt</span> <ChevronRight />
-          {{ household.name }}
-        </h1>
+    <header
+      class="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-muted"
+    >
+      <div class="max-w-6xl mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <NuxtLink
+            to="/authenticated/households"
+            class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ChevronLeft class="h-5 w-5" />
+            <span class="hidden sm:inline">Zurück</span>
+          </NuxtLink>
 
-        <SystemLogoutButton />
-      </div>
-      <div class="flex gap-2 mt-2">
-        <NuxtLink to="/authenticated/households">
-          <Button variant="link">
-            <ChevronLeft />
-            Zurück
-          </Button>
-        </NuxtLink>
-        <Separator orientation="vertical" />
-        <LazySystemAddMember />
-        <Separator orientation="vertical" />
-        <SystemVisualChangeButton />
+          <div class="flex-1"></div>
+
+          <div class="flex items-center gap-2">
+            <SystemVisualChangeButton />
+            <SystemLogoutButton />
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center justify-center py-3">
+          <h1
+            class="text-2xl sm:text-3xl font-bold tracking-tight text-center"
+            :style="{
+              'view-transition-name': `ueberschrift-household-${household._id}`,
+            }"
+          >
+            {{ household.name }}
+          </h1>
+          <AddMember />
+        </div>
       </div>
     </header>
-    <main class="max-w-4xl w-full mx-auto space-y-4 mt-2">
+
+    <main class="max-w-6xl mx-auto p-4 space-y-6">
+      <!-- Deine bestehenden Content-Komponenten hier -->
       <LazySystemQAndA />
       <LazySystemRecipeslist />
     </main>
   </template>
+
   <template v-else>
-    <div class="flex flex-col items-center justify-center h-screen">
-      <TriangleAlert class="h-16 w-16 text-red-500" />
-      <h2 class="text-xl font-semibold">Fehler beim Laden des Haushalts</h2>
-      <p class="text-muted-foreground">
-        Es ist ein Problem aufgetreten, während der Haushalt geladen wurde.
-        Bitte versuche es später erneut.
-      </p>
-      <NuxtLink to="/authenticated/households" class="mt-4">
-        <Button variant="default">
-          <ChevronLeft />
-          Zurück zur Übersicht
-        </Button>
-      </NuxtLink>
+    <!-- Dein bestehender Error-State bleibt unverändert -->
+    <div class="flex flex-col items-center justify-center min-h-screen p-4">
+      <div class="max-w-md w-full text-center space-y-6">
+        <div class="relative mx-auto w-24 h-24">
+          <div
+            class="absolute inset-0 bg-destructive/20 rounded-full animate-ping"
+          ></div>
+          <div class="relative bg-destructive/10 rounded-full p-5">
+            <TriangleAlert class="h-12 w-12 text-destructive mx-auto" />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="text-2xl font-bold tracking-tight">
+            Haushalt nicht gefunden
+          </h2>
+          <p class="text-muted-foreground">
+            Der gewünschte Haushalt konnte nicht geladen werden. Möglicherweise
+            existiert er nicht oder es gab ein technisches Problem.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 pt-4">
+          <NuxtLink to="/authenticated/households" class="flex-1">
+            <Button variant="default" class="w-full">
+              <Home class="h-4 w-4 mr-2" />
+              Zur Übersicht
+            </Button>
+          </NuxtLink>
+          <Button variant="outline" class="flex-1" @click="$router.back()">
+            <RefreshCw class="h-4 w-4 mr-2" />
+            Erneut versuchen
+          </Button>
+        </div>
+      </div>
     </div>
   </template>
 </template>
 
 <script setup lang="ts">
-import { ChevronLeft, ChevronRight, TriangleAlert } from "lucide-vue-next";
+import { ChevronLeft, TriangleAlert, RefreshCw, Home } from "lucide-vue-next";
+import AddMember from "~/components/system/AddMember.vue";
 import { useHousehold } from "~/composable/household";
 
 const household = useHousehold();
@@ -54,6 +92,13 @@ const household = useHousehold();
 useHead({
   titleTemplate: "Haushalt - %s",
   title: () => household.value?.name || "???",
+});
+
+definePageMeta({
+  pageTransition: {
+    name: "slide-left",
+    mode: "out-in",
+  },
 });
 
 preloadRouteComponents("/authenticated/households/[household]/recipe/[recipe]");

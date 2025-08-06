@@ -6,6 +6,7 @@
           :src="`/api/v1/cms/${data.bild_reference}`"
           alt="Rezept Bild"
           class="absolute inset-0 w-full h-80 object-cover -top-6 object-center rounded-t-lg mask-t-from-100% mask-b-to-80%"
+          :style="{ 'view-transition-name': `rezept-bild-${data._id}` }"
         />
 
         <div class="flex justify-between w-full z-10">
@@ -24,15 +25,28 @@
                 <span class="sr-only">Mehr</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent class="flex flex-col gap-y-2">
               <SystemRecipeVisibillityChange :recipe="data" />
-              <DropdownMenuItem @click="deleteRecipe">Löschen</DropdownMenuItem>
+              <Button
+                variant="outline"
+                @click.native="deleteRecipe"
+                :disabled="hasPermission('READ')"
+              >
+                Das Rezept löschen
+              </Button>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
         <div class="flex z-10 w-full items-center justify-between">
           <div class="grid">
-            <h1 class="text-2xl font-bold mb-2">{{ data.name }}</h1>
+            <h3
+              class="text-2xl font-bold mb-2"
+              :style="{
+                'view-transition-name': `rezept-titel-${data._id}`,
+              }"
+            >
+              {{ data.name }}
+            </h3>
             <div class="flex flex-wrap gap-2">
               <Badge>
                 <NuxtTime
@@ -59,7 +73,9 @@
       <CardContent class="space-y-8">
         <div>
           <Label class="text-lg font-semibold">Beschreibung</Label>
-          <span class="mt-2 text-base text-muted-foreground">
+          <span
+            class="mt-2 text-base text-muted-foreground whitespace-pre-wrap"
+          >
             {{ data.beschreibung }}
           </span>
         </div>
@@ -111,6 +127,7 @@ import {
 import { toast } from "vue-sonner";
 import { useHousehold } from "~/composable/household";
 import { useMembers } from "~/composable/members";
+import { hasPermission } from "~/composable/useRole";
 import type { FrontEndRezept } from "~/types/HouseHold";
 
 const portions = ref(1);

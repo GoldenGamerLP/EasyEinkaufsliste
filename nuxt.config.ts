@@ -10,7 +10,12 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  modules: ["@nuxt/fonts", "@nuxtjs/tailwindcss", "shadcn-nuxt"],
+  modules: [
+    "@nuxt/fonts",
+    "@nuxtjs/tailwindcss",
+    "shadcn-nuxt",
+    "@nuxtjs/critters",
+  ],
   shadcn: {
     /**
      * Prefix for all the imported component
@@ -39,5 +44,13 @@ export default defineNuxtConfig({
   },
   experimental: {
     lazyHydration: true,
+    viewTransition: true,
+    componentIslands: true,
+  },
+  features: {
+    inlineStyles: true,
+  },
+  build: {
+    transpile: ["shadcn-nuxt", "@headlessui/vue"],
   },
 });
