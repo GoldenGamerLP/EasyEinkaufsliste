@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "shadcn-nuxt",
     "@nuxtjs/critters",
+    "nuxt-booster",
   ],
   shadcn: {
     /**
@@ -32,7 +33,16 @@ export default defineNuxtConfig({
       preload: true,
     },
   },
-
+  booster: {
+    disableNuxtFontaine: true,
+    optimizeSSR: {
+      inlineStyles: true,
+    },
+    detection: {
+      performance: true,
+      browserSupport: true,
+    },
+  },
   app: {
     head: {
       htmlAttrs: {
