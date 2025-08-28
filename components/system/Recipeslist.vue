@@ -53,7 +53,7 @@
           @update:addrecipe="(recipe) => data?.push(recipe)"
         />
         <LazySystemNewRecipeDialog
-          @update:recipe="(recipe) => data?.push(recipe)"
+          @update:recipe="refreshRecipeList()"
         />
       </div>
     </CardHeader>
@@ -113,14 +113,14 @@
             </div>
 
             <div class="p-4 space-y-2">
-              <h3
+              <h2
                 class="text-lg font-semibold leading-tight"
                 :style="{
                   'view-transition-name': `rezept-titel-${recipe._id}`,
                 }"
               >
                 {{ recipe.name }}
-              </h3>
+              </h2>
               <p class="text-sm text-muted-foreground line-clamp-2">
                 {{ recipe.beschreibung }}
               </p>
@@ -146,6 +146,10 @@
                   <Globe class="h-3 w-3 mr-1" />
                   Öffentlich
                 </Badge>
+                <Badge v-if="recipe.upvotes" variant="secondary" title="Quiz generierte upvotes">
+                  <ThumbsUpIcon class="h-3 w-3 mr-1" />
+                  {{ recipe.upvotes }}
+                </Badge>
               </div>
             </div>
           </NuxtLink>
@@ -168,6 +172,7 @@ import {
   Text,
   Heart,
   Carrot,
+  ThumbsUpIcon
 } from "lucide-vue-next";
 import { type FrontEndRezept } from "~/types/HouseHold";
 
@@ -193,6 +198,11 @@ const { data, status, error, refresh } = await useFetch(
     deep: true,
   }
 );
+
+const refreshRecipeList = async () => {
+  await refresh({cause: "refresh:hook"});
+}
+
 
 const calculateCost = (rezept: FrontEndRezept): number => {
   return rezept.zutaten.reduce((total, zutat) => {

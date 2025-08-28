@@ -2,21 +2,18 @@
   <div v-if="status === 'success' && data" class="max-w-3xl mx-auto mt-8">
     <Card>
       <CardHeader class="h-52 relative flex flex-col justify-between">
-        <img
-          :src="`/api/v1/cms/${data.bild_reference}`"
-          alt="Rezept Bild"
+        <img :src="`/api/v1/cms/${data.bild_reference}`" alt="Rezept Bild"
           class="absolute inset-0 w-full h-80 object-cover -top-6 object-center rounded-t-lg mask-t-from-100% mask-b-to-80%"
-          :style="{ 'view-transition-name': `rezept-bild-${data._id}` }"
-        />
+          :style="{ 'view-transition-name': `rezept-bild-${data._id}` }" />
 
         <div class="flex justify-between w-full z-10">
-          <NuxtLink
-            :to="{
-              name: 'authenticated-households-household',
-              params: { household: useRoute().params.household },
-            }"
-          >
-            <Button variant="outline"> <ChevronsLeft /> Zurück </Button>
+          <NuxtLink :to="{
+            name: 'authenticated-households-household',
+            params: { household: useRoute().params.household },
+          }">
+            <Button variant="outline">
+              <ChevronsLeft /> Zurück
+            </Button>
           </NuxtLink>
           <DropdownMenu v-if="recipeBelongsToHousehold">
             <DropdownMenuTrigger as-child>
@@ -27,11 +24,7 @@
             </DropdownMenuTrigger>
             <DropdownMenuContent class="flex flex-col gap-y-2">
               <SystemRecipeVisibillityChange :recipe="data" />
-              <Button
-                variant="outline"
-                @click.native="deleteRecipe"
-                :disabled="hasPermission('READ')"
-              >
+              <Button variant="outline" @click.native="deleteRecipe" :disabled="hasPermission('READ')">
                 Das Rezept löschen
               </Button>
             </DropdownMenuContent>
@@ -39,22 +32,14 @@
         </div>
         <div class="flex z-10 w-full items-center justify-between">
           <div class="grid">
-            <h3
-              class="text-2xl font-bold mb-2"
-              :style="{
-                'view-transition-name': `rezept-titel-${data._id}`,
-              }"
-            >
+            <h3 class="text-2xl font-bold mb-2" :style="{
+              'view-transition-name': `rezept-titel-${data._id}`,
+            }">
               {{ data.name }}
             </h3>
             <div class="flex flex-wrap gap-2">
               <Badge>
-                <NuxtTime
-                  relative
-                  :datetime="data.created"
-                  style="long"
-                  numeric="auto"
-                />
+                <NuxtTime relative :datetime="data.created" style="long" numeric="auto" />
               </Badge>
               <Badge>{{ data.zutaten?.length || 0 }} Zutat(en)</Badge>
               <Badge>
@@ -65,6 +50,10 @@
                 <DoorOpen />
                 Öffentlich
               </Badge>
+              <Badge v-if="data.upvotes" title="Quiz generierte upvotes">
+                <ThumbsUpIcon class="h-3 w-3 mr-1" />
+                {{ data.upvotes }}
+              </Badge>
             </div>
           </div>
           <SystemMarkRecipeAsFavorit :recipe="data" type="icon" />
@@ -73,20 +62,12 @@
       <CardContent class="space-y-8">
         <div>
           <Label class="text-lg font-semibold">Beschreibung</Label>
-          <span
-            class="mt-2 text-base text-muted-foreground whitespace-pre-wrap"
-          >
+          <span class="mt-2 text-base text-muted-foreground whitespace-pre-wrap">
             {{ data.beschreibung }}
           </span>
         </div>
         <div>
-          <NumberField
-            id="portion"
-            :default-value="members?.length || 0"
-            :min="1"
-            class="mb-4"
-            v-model="portions"
-          >
+          <NumberField id="portion" :default-value="members?.length || 0" :min="1" class="mb-4" v-model="portions">
             <Label for="portion" class="text-lg font-semibold">Portionen</Label>
             <NumberFieldContent>
               <NumberFieldDecrement />
@@ -107,10 +88,7 @@
       </CardContent>
     </Card>
   </div>
-  <div
-    v-else-if="status === 'pending'"
-    class="flex justify-center items-center h-96"
-  >
+  <div v-else-if="status === 'pending'" class="flex justify-center items-center h-96">
     <Loader2Icon class="animate-spin mr-2" />
     <span>Laden...</span>
   </div>
@@ -123,6 +101,7 @@ import {
   ChevronsLeft,
   MoreVertical,
   DoorOpen,
+  ThumbsUpIcon
 } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 import { useHousehold } from "~/composable/household";

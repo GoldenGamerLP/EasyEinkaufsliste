@@ -173,6 +173,7 @@ export const getRecipe = async (
         createdby: { $first: "$createdby" },
         householdId: { $first: "$householdId" },
         isPublic: { $first: "$isPublic" },
+        upvotes: { $first: "$upvotes"}
       },
     },
   ]);
@@ -252,7 +253,8 @@ export const getRecipesForHousehold = async (
       sortStage = { created: -1 };
       break;
     case "mostliked":
-      sortStage = { isFavorite: -1, name: 1 };
+      //Sort after upvotes and isFavorite
+      sortStage = { isFavorite: -1, upvotes: -1 };
       break;
     default:
       sortStage = { created: -1 };
@@ -327,6 +329,7 @@ export const getRecipesForHousehold = async (
           },
           isPublic: { $first: "$recipe.isPublic" },
           isFavorite: { $first: "$isFavorite" },
+          upvotes: { $first: "$recipe.upvotes"}
         },
       },
       { $sort: sortStage },
@@ -388,6 +391,17 @@ export const insertNewRecipe = async (
   return rezeptData;
 };
 
+export const addRecipesUpvotes = (recipes: Map<string, number>) => {
+  const bulOps = recipes.entries().map((item) => ({
+    updateOne: {
+      filter: { _id: new ObjectId(item[0])},
+      update: { $inc: { upvotes: item[1] } }
+    }
+  })).toArray();
+
+  return rezeptCollection.bulkWrite(bulOps);
+}
+
 export const addRecipeToHousehold = async (
   householdId: string,
   recipeId: string,
@@ -411,6 +425,7 @@ export const addRecipeToHousehold = async (
     isFavorite: false,
     isEnabled: true,
     lastModified: new Date(),
+    upvotes: 0,
   });
 
   return result.acknowledged;

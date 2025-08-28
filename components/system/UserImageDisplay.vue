@@ -1,6 +1,6 @@
 <template>
     <component :is="currentUser?.bild_reference ? 'img' : User" :class="cn('rounded-full w-10 h-10', props.class)"
-        :src="`/api/v1/cms/${currentUser?.bild_reference}`" />
+        :src="`/api/v1/cms/${currentUser?.bild_reference}`" alt="Profilbild" />
 </template>
 
 <script setup lang="ts">

@@ -307,7 +307,7 @@ const calculatedPercentage = (questionId: string, answerId: string) => {
 };
 
 const geetMembersFromAnswer = (answerId: string) => {
-  if (!answerData.value) return [];
+  if (!answerData.value || !members.value) return [];
 
   const crrAnswers = answerData.value.answer.filter(
     (entry) => entry.answerId === answerId

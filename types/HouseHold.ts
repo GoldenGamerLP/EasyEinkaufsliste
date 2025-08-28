@@ -1,8 +1,8 @@
 import type { ObjectId } from "mongodb";
 import * as z from "zod";
 
-export const UserRoles = ['READ', 'READ_WRITE', 'CREATOR'] as const;
-export type UserRole = typeof UserRoles[number];
+export const UserRoles = ["READ", "READ_WRITE", "CREATOR"] as const;
+export type UserRole = (typeof UserRoles)[number];
 
 type FileAttachment = {
   fileId: String; // GridFS file ID
@@ -30,11 +30,9 @@ const RezeptErstellSchema = z.object({
   bild: z.string({ message: "Ein Bild wird benötigt." }),
   zutaten: z.array(
     z.object({
-      portion: z
-        .number()
-        .min(1, {
-          message: "Die Portionen müssen mindestens größer als 0 sein.",
-        }),
+      portion: z.number().min(1, {
+        message: "Die Portionen müssen mindestens größer als 0 sein.",
+      }),
       lebensmittel: LebensmittelSchema,
     }),
     { message: "Es muss mindestens ein Lebensmittel eingetragen sein." }
@@ -57,6 +55,7 @@ interface Rezept {
   createdby: string;
   householdId: string;
   isPublic: boolean;
+  upvotes: number | undefined;
 }
 
 interface HouseholdRezept {
@@ -68,6 +67,7 @@ interface HouseholdRezept {
   isFavorite?: boolean;
   isEnabled: boolean; // true wenn das Rezept verfügbar ist, false wenn nicht (z.B. wenn Original nicht mehr public)
   lastModified: Date | string;
+  upvotes: number | undefined;
 }
 
 interface FrontEndRezept {
@@ -75,15 +75,17 @@ interface FrontEndRezept {
   name: string;
   beschreibung: string | undefined;
   bild_reference: string;
-  zutaten: Lebensmittel & {
-    portion: number;
-  }[];
+  zutaten: Lebensmittel &
+    {
+      portion: number;
+    }[];
   created: Date | string;
   lastModified: Date | string;
   createdby: string;
   householdId: string;
   isPublic: boolean | undefined;
   isFavorite: boolean;
+  upvotes: number | undefined;
 }
 
 type RezeptErstellType = z.infer<typeof RezeptErstellSchema>;
@@ -94,7 +96,7 @@ interface HouseHold {
   members: string[]; // Array of user IDs
   memberRoles: {
     [userId: string]: UserRole; // Map of user IDs to their roles
-  }
+  };
   createdBy: string; // User ID of the creator
   createdAt: Date | string; // Date | string when the household was created
 }

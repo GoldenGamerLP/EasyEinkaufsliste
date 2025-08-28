@@ -35,12 +35,15 @@ export default defineNuxtConfig({
   },
   booster: {
     disableNuxtFontaine: true,
+    disableNuxtImage: false,
     optimizeSSR: {
       inlineStyles: true,
+      cleanPrefetches: true,
+      cleanPreloads: false,
     },
     detection: {
-      performance: true,
-      browserSupport: true,
+      performance: false,
+      browserSupport: false,
     },
   },
   app: {

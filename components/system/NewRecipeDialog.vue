@@ -9,26 +9,21 @@
     <DrawerContent class="mx-auto w-full max-w-4xl">
       <DrawerHeader>
         <DrawerTitle>Neues Rezept</DrawerTitle>
-        <DrawerDescription
-          >Gib einen Namen ein und die Zutaten.</DrawerDescription
-        >
+        <DrawerDescription>Gib einen Namen ein und die Zutaten.</DrawerDescription>
       </DrawerHeader>
       <div class="p-4 pb-0 max-h-1/2 overflow-y-auto scrollbar">
-        <AutoForm
-          :schema="RezeptErstellSchema.omit({ householdId: true })"
-          :field-config="{
-            zutaten: { component: 'lebensmittelArray' },
-            bild: { component: 'profile' },
-            beschreibung: { component: 'textarea' },
-          }"
-          class="space-y-8"
-          @submit="submit"
-        >
+        <AutoForm :schema="RezeptErstellSchema.omit({ householdId: true, isPublic: true })" :field-config="{
+          zutaten: { component: 'lebensmittelArray' },
+          bild: { component: 'profile' },
+          beschreibung: { component: 'textarea' },
+        }" class="space-y-8" @submit="submit">
           <Button type="submit" class="w-full" :disabled="isLoading">
             <template v-if="isLoading">
               <Loader2Icon class="animate-spin" />
             </template>
-            <template v-else> <Send /> Absenden </template>
+            <template v-else>
+              <Send /> Absenden
+            </template>
           </Button>
         </AutoForm>
       </div>
@@ -45,16 +40,17 @@
 import { toast } from "vue-sonner";
 import { hasPermission } from "~/composable/useRole";
 import { Loader2Icon, Send, Plus } from "lucide-vue-next";
-import { RezeptErstellSchema } from "~/types/HouseHold";
+import { RezeptErstellSchema, type RezeptErstellType } from "~/types/HouseHold";
 
 const emit = defineEmits(["update:recipes"]);
 
 const drawerState = ref(false);
 const isLoading = ref(false);
-const submit = async (data: Record<string, any>) => {
+const submit = async (data: RezeptErstellType) => {
   if (isLoading.value) return;
+  isLoading.value = true;
+
   try {
-    isLoading.value = true;
     const res = await $fetch("/api/v1/household/recipes/create", {
       method: "POST",
       body: {
@@ -66,8 +62,8 @@ const submit = async (data: Record<string, any>) => {
     //If success, then close this
     if (res) {
       drawerState.value = false;
-      emit("update:recipes", res);
-      toast("Rezept erstellt!", { description: "Dein Rezept wurde erstellt!" });
+      emit("update:recipes");
+      toast.info(`Das Rezept "${data.name}" wurde erfolgreich erstellt!`);
     }
   } catch (error) {
     console.error(error);

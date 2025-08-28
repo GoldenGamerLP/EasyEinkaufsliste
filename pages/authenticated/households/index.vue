@@ -58,7 +58,7 @@
 
       <!-- New Household Card -->
       <li class="h-full">
-        <Drawer>
+        <Drawer v-model:open="isOpen" >
           <DrawerTrigger as-child>
             <Button
               variant="outline"
@@ -118,11 +118,12 @@ import { Plus, Loader2, Send, X, Home, Users } from "lucide-vue-next";
 import * as z from "zod";
 import { toast } from "vue-sonner";
 
+const isOpen = ref(false);
 const isLoading = ref(false);
 
 preloadRouteComponents("/authenticated/households/test");
 
-const { data, status, refresh } = useFetch("/api/v1/household/households", {
+const { data, status, refresh } = await useFetch("/api/v1/household/households", {
   method: "get",
 });
 
@@ -146,16 +147,10 @@ const onSubmit = async (data: Record<string, any>) => {
     });
 
     await refresh();
-
-    toast("Haushalt erfolgreich erstellt!", {
-      description: `Der Haushalt "${data.name}" wurde erfolgreich erstellt.`,
-    });
+    isOpen.value = false;
+    toast.info(`Der Haushalt "${data.name}" wurde erfolgreich erstellt.`);
   } catch (error) {
-    toast("Fehler beim Erstellen des Haushalts", {
-      description:
-        "Es gab ein Problem beim Erstellen des Haushalts. Bitte versuche es später erneut.",
-      important: true,
-    });
+    toast.error("Es gab ein Problem beim Erstellen des Haushalts. Bitte versuche es später erneut.");
   } finally {
     isLoading.value = false;
   }
