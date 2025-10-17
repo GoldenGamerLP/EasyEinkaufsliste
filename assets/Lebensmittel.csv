@@ -8,7 +8,7 @@ Avocado,Obst,2.00,Stück,1,Stück,1
 Backpulver,Backzutaten,0.50,Päckchen,15,Gramm,15
 Balsamico Essig,Saucen,3.50,Flasche,500,Milliliter,15
 Banane,Obst,0.45,Stück,1,Stück,1
-Basilikum (frisch),Kräuter,1.50,Bund,1,Bund,1
+Basilikum (frisch),Kräuter,1.50,Bund,100,Gramm,10
 Birne,Obst,0.65,Stück,1,Stück,1
 Brokkoli,Gemüse,2.00,Kopf,1,Stück,1
 Brötchen,Backwaren,0.50,Stück,1,Stück,1
@@ -19,8 +19,8 @@ Chiasamen,Backzutaten,3.50,Packung,200,Gramm,15
 Ciabatta,Backwaren,2.00,Stück,1,Stück,1
 Cornflakes,Frühstück,2.70,Packung,500,Gramm,30
 Couscous,Getreideprodukte,1.80,Packung,500,Gramm,80
-Curry (Gewürz),Gewürze,2.50,Dose,50,Gramm,5
-Dillspitzen (getrocknet),Gewürze,1.80,Dose,15,Gramm,2
+Curry (Gewürz),Gewürze,2.50,Dose,50,Gramm,1 TL
+Dillspitzen (getrocknet),Gewürze,1.80,Dose,15,Gramm,1 Prise
 Eier (Größe M),Eier,0.35,Stück,1,Stück,1
 Eisbergsalat,Gemüse,1.80,Kopf,1,Stück,1
 Erbsen (Konserve),Konserven,1.10,Dose,400,Gramm,200
@@ -38,9 +38,9 @@ Hähnchenbrustfilet,Fleisch,6.00,Packung,400,Gramm,200
 Heidelbeeren,Obst,3.10,Schale,125,Gramm,125
 Honig,Aufstrich,4.50,Glas,500,Gramm,20
 Hüttenkäse,Milchprodukte,1.40,Becher,200,Gramm,100
-Ingwer (frisch),Gemüse,0.40,Stück,100,Gramm,10
+Ingwer (frisch),Gemüse,1.80,Packung,250,Gramm,50
 Kabeljaufilet (TK),Fisch,4.50,Packung,250,Gramm,250
-Kaffeebohnen,Getränke,8.00,Packung,500,Gramm,15
+Kaffeebohnen,Getreideprodukte,8.00,Packung,500,Gramm,15
 Karotte,Gemüse,0.35,Stück,1,Stück,1
 Kartoffel,Gemüse,2.50,Beutel,2000,Gramm,200
 Kartoffelchips,Snacks,2.00,Tüte,175,Gramm,30
@@ -50,8 +50,8 @@ Kiwi,Obst,0.75,Stück,1,Stück,1
 Knoblauch,Gemüse,0.35,Knolle,1,Stück,1
 Kochschinken (Aufschnitt),Fleisch_Wurstwaren,2.50,Packung,100,Gramm,20
 Kokosmilch,Konserven,1.80,Dose,400,Milliliter,100
-Kreuzkümmel,Gewürze,2.00,Dose,50,Gramm,5
-Kurkuma,Gewürze,2.30,Dose,50,Gramm,5
+Kreuzkümmel,Gewürze,2.00,Dose,50,Gramm,1 TL
+Kurkuma,Gewürze,2.30,Dose,50,Gramm,1 TL
 Lachsfilet,Fisch,5.00,Packung,200,Gramm,200
 Linsen (rot),Hülsenfrüchte,2.30,Packung,500,Gramm,80
 Magerquark,Milchprodukte,1.30,Becher,500,Gramm,100
@@ -61,39 +61,39 @@ Mayonnaise,Saucen,2.00,Glas,250,Gramm,15
 Milch (1.5% Fett),Milchprodukte,1.20,Packung,1,Liter,200
 Mineralwasser (still),Getränke,0.60,Flasche,1,Liter,250
 Mozzarella,Milchprodukte,1.00,Kugel,125,Gramm,125
-Muskatnuss (gemahlen),Gewürze,2.80,Dose,30,Gramm,2
+Muskatnuss (gemahlen),Gewürze,2.80,Dose,30,Gramm,1 Prise
 Müsli (Basismischung),Frühstück,3.80,Packung,750,Gramm,50
 Naturjoghurt,Milchprodukte,0.90,Becher,500,Gramm,150
 Olivenöl,Fette_Oele,9.00,Flasche,750,Milliliter,15
 Orange,Obst,0.65,Stück,1,Stück,1
 Orangensaft,Getränke,1.80,Packung,1,Liter,200
-Oregano (getrocknet),Gewürze,1.90,Dose,20,Gramm,2
+Oregano (getrocknet),Gewürze,1.90,Dose,20,Gramm,1 TL
 Paprika (gelb),Gemüse,1.00,Stück,1,Stück,1
 Paprika (rot),Gemüse,1.00,Stück,1,Stück,1
-Paprikapulver,Gewürze,1.80,Dose,50,Gramm,5
-Petersilie (frisch),Kräuter,1.30,Bund,1,Bund,1
-Pfeffer (gemahlen),Gewürze,2.20,Streuer,50,Gramm,50
+Paprikapulver,Gewürze,1.80,Dose,50,Gramm,1 TL
+Petersilie (frisch),Kräuter,1.30,Bund,100,Gramm,10
+Pfeffer (gemahlen),Gewürze,2.20,Dose,50,Gramm,1 Prise
 Putenbrust (Aufschnitt),Fleisch_Wurstwaren,2.80,Packung,150,Gramm,25
 Quinoa,Getreideprodukte,3.50,Packung,500,Gramm,80
 Rinderhackfleisch,Fleisch,7.00,Packung,500,Gramm,250
 Roggenbrot (Laib),Backwaren,4.00,Laib,750,Gramm,50
 Rosinen,Backzutaten,1.80,Packung,200,Gramm,30
-Rosmarin (getrocknet),Gewürze,2.00,Dose,30,Gramm,2
+Rosmarin (getrocknet),Gewürze,2.00,Dose,30,Gramm,1 TL
 Sahne (Schlagsahne),Milchprodukte,1.90,Becher,200,Milliliter,30
 Salami (Aufschnitt),Fleisch_Wurstwaren,3.00,Packung,150,Gramm,25
 Salz,Gewürze,0.70,Packung,500,Gramm,500
 Schokolade (Vollmilch),Süßigkeiten,1.30,Tafel,100,Gramm,25
-Schnittlauch (frisch),Kräuter,1.10,Bund,1,Bund,1
+Schnittlauch (frisch),Kräuter,1.10,Bund,100,Gramm,10
 Schweineschnitzel,Fleisch,4.50,Packung,300,Gramm,150
-Senf (mittelscharf),Saucen,1.20,Tube,200,Milliliter,15
+Senf (mittelscharf),Saucen,1.20,Tube,200,Gramm,15
 Sesam,Backzutaten,2.00,Packung,100,Gramm,10
 Sojasauce,Saucen,2.50,Flasche,250,Milliliter,15
 Sonnenblumenöl,Fette_Oele,3.50,Flasche,1,Liter,15
 Spaghetti,Getreideprodukte,1.20,Packung,500,Gramm,125
 Spinat (frisch),Gemüse,2.20,Packung,500,Gramm,250
 Süßkartoffel,Gemüse,1.30,Stück,1,Stück,1
-Thunfisch (im eigenen Saft),Fisch,1.70,Dose,185,Gramm,1 Dose
-Thymian (getrocknet),Gewürze,1.90,Dose,20,Gramm,2
+Thunfisch (im eigenen Saft),Fisch,1.70,Dose,185,Gramm,92
+Thymian (getrocknet),Gewürze,1.90,Dose,20,Gramm,1 TL
 Toastbrot (Vollkorn),Backwaren,2.00,Packung,500,Gramm,25
 Toastbrot (Weizen),Backwaren,1.60,Packung,500,Gramm,25
 Tomate,Gemüse,0.50,Stück,1,Stück,1
@@ -103,8 +103,33 @@ Vollkornbrot (Laib),Backwaren,3.20,Laib,500,Gramm,50
 Weizenmehl (Type 405),Backzutaten,1.00,Packung,1000,Gramm,1000
 Weintrauben,Obst,3.00,Schale,500,Gramm,150
 Wiener Würstchen,Fleisch_Wurstwaren,3.80,Packung,400,Gramm,200
-Zimt (gemahlen),Gewürze,2.00,Dose,50,Gramm,5
+Zimt (gemahlen),Gewürze,2.00,Dose,50,Gramm,1 Prise
 Zitrone,Obst,0.40,Stück,1,Stück,1
 Zwiebel,Gemüse,0.30,Stück,1,Stück,1
 Zucchini,Gemüse,1.40,Stück,1,Stück,1
 Zucker,Backzutaten,1.20,Packung,1000,Gramm,1000
+Tomatenmark,Konserven,1.30,Dose,200,Gramm,30
+Kaffee (gemahlen),Getreideprodukte,6.50,Packung,500,Gramm,15
+Schwarzbrot (Laib),Backwaren,2.50,Laib,500,Gramm,50
+Pastinake,Gemüse,0.80,Stück,1,Stück,1
+Rote Bete,Gemüse,0.75,Stück,1,Stück,1
+Linsen (gelb),Hülsenfrüchte,2.00,Packung,500,Gramm,80
+Linsen (braun),Hülsenfrüchte,2.10,Packung,500,Gramm,80
+Miso (rot),Konserven,4.50,Glas,250,Gramm,10
+Seitan,Fleisch_Ersatz,3.50,Packung,200,Gramm,100
+Kichererbsen (Konserve),Konserven,0.95,Dose,400,Gramm,200
+Grüne Linsen (Linsensalat),Hülsenfrüchte,2.40,Packung,500,Gramm,80
+Nelken (ganz),Gewürze,3.50,Dose,20,Gramm,2 Stück
+Ingwer (Pulver),Gewürze,3.20,Dose,40,Gramm,1 TL
+Chili (Pulver),Gewürze,2.80,Dose,50,Gramm,1 Prise
+Koriander (Samen),Gewürze,2.50,Dose,50,Gramm,1 TL
+Fenchel (Samen),Gewürze,2.40,Dose,50,Gramm,1 TL
+Majoran (getrocknet),Gewürze,1.80,Dose,20,Gramm,1 TL
+Basilikum (getrocknet),Gewürze,2.00,Dose,20,Gramm,1 TL
+Cayennepfeffer,Gewürze,2.50,Dose,50,Gramm,1 Prise
+Cheddar (in Scheiben),Milchprodukte,3.20,Packung,150,Gramm,30
+Emmentaler (in Scheiben),Milchprodukte,3.50,Packung,150,Gramm,30
+Edamer (in Scheiben),Milchprodukte,2.50,Packung,150,Gramm,30
+Parmesan (gerieben),Milchprodukte,4.20,Dose,100,Gramm,10
+Ricotta,Milchprodukte,2.00,Becher,250,Gramm,100
+Käse (Bergkäse),Milchprodukte,3.80,Packung,150,Gramm,30
